@@ -30,8 +30,8 @@ func (auth *SigAuth) Sign(r *http.Request) error {
 func userInfo(jmsurl string, auth *SigAuth) *resty.Response {
 	url := jmsurl + "/api/v1/users/users/"
 	logx.Infof("url: %v", url)
-	logx.Infof("auth: %v", auth.KeyID)
-	logx.Infof("auth: %v", auth.SecretID)
+	// logx.Infof("auth: %v", auth.KeyID)
+	// logx.Infof("auth: %v", auth.SecretID)
 	gmtFmt := "Mon, 02 Jan 2006 15:04:05 GMT"
 	// client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
