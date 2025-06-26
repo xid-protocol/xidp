@@ -18,7 +18,7 @@ import (
 var sig = make(chan os.Signal, 1)
 
 func initConfig() string {
-	confPath := flag.String("c", "/opt/xidp/config.yml", "config file path")
+	confPath := flag.String("c", "./.conf/config.yml", "config file path")
 	flag.Parse()
 	// confPath_str := common.NormalizePath(*confPath)
 	//如果配置文件不存在，则报错并关闭程序
