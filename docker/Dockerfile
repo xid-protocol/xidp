@@ -2,6 +2,8 @@
 FROM golang:1.24-alpine AS builder
 
 # 设置Go环境变量
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GOSUMDB=sum.golang.google.cn
 ENV GO111MODULE=on
 
 # 安装必要的包
@@ -10,14 +12,14 @@ RUN apk add --no-cache git
 # 设置工作目录
 WORKDIR /app
 
-# 复制go mod文件
-COPY ../go.mod ../go.sum ./
+# 复制go mod文件（从根目录）
+COPY go.mod go.sum ./
 
 # 下载依赖
 RUN go mod download
 
-# 复制源代码
-COPY .. .
+# 复制源代码（从根目录）
+COPY . .
 
 # 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
@@ -25,6 +27,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.g
 # 最终镜像
 FROM alpine:latest
 
+# 安装ca-certificates用于HTTPS请求
+RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /root/
 
@@ -32,7 +36,7 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 
 # 暴露端口
-EXPOSE 9527
+EXPOSE 8080
 
 # 运行应用
-CMD ["./main"] 
+CMD ["./main"]
