@@ -2,8 +2,6 @@
 FROM golang:1.24-alpine AS builder
 
 # 设置Go环境变量
-ENV GOPROXY=https://goproxy.cn,direct
-ENV GOSUMDB=sum.golang.google.cn
 ENV GO111MODULE=on
 
 # 安装必要的包
@@ -22,7 +20,7 @@ RUN go mod download
 COPY .. .
 
 # 构建应用
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/xidp.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
 
 # 最终镜像
 FROM alpine:latest
