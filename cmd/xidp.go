@@ -10,7 +10,6 @@ import (
 	"github.com/colin-404/logx"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"github.com/xid-protocol/xidp/accounts"
 	"github.com/xid-protocol/xidp/biz"
 	"github.com/xid-protocol/xidp/db"
 )
@@ -82,7 +81,7 @@ func main() {
 
 	go ServerStart()
 	//go sealsuite.SealsuiteAcountInit()
-	go accounts.AccountMonitor()
+	//go accounts.AccountMonitor()
 	<-sig
 }
 
