@@ -1,0 +1,4 @@
+{"level":"info","timestamp":"2025-06-20T22:56:01+08:00","source":"db/mongodb.go:48","msg":"Successfully connected to MongoDB"}
+{"level":"info","timestamp":"2025-06-20T22:56:01+08:00","source":"cmd/xidp.go:103","msg":"Listening and serving on 9527"}
+{"level":"info","timestamp":"2025-06-20T23:00:57+08:00","source":"db/mongodb.go:48","msg":"Successfully connected to MongoDB"}
+{"level":"info","timestamp":"2025-06-20T23:00:57+08:00","source":"cmd/xidp.go:103","msg":"Listening and serving on 9527"}

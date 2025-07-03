@@ -1,0 +1,44 @@
+services:
+  xidp:
+    image: xidp:latest
+    container_name: xidp
+    restart: unless-stopped
+    ports:
+      - "9527:9527"
+    expose:
+      - "9527"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - xidp-network
+  mongo:
+    image: mongo:5.0.28
+    container_name: xidp-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=xidp
+    networks:
+      - xidp-network
+    volumes:
+      - /opt/xidp/data:/data/db
+  info-manager:
+    image: info-manager:latest
+    container_name: info-manager
+    restart: unless-stopped
+    ports:
+      - "9528:9528"
+    expose: 
+      - "9528"
+    networks:
+      - xidp-network
+
+
+networks:
+  xidp-network:
+    external: true
