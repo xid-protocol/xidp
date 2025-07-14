@@ -141,7 +141,7 @@ func CreateXID(c *gin.Context) {
 		return
 	}
 
-	XID := protocols.NewXID(info, meta, payload)
+	XID := protocols.NewXID(&info, &meta, payload)
 
 	if err != nil {
 		c.JSON(200, gin.H{"error": err.Error()})

@@ -24,10 +24,6 @@ func ConvertXIDInfo(info map[string]interface{}) (protocols.Info, error) {
 		return XIDInfo, fmt.Errorf("info.type is required")
 	}
 
-	if info["encryption"] != nil {
-		XIDInfo.Encryption = info["encryption"].(bool)
-	}
-
 	return XIDInfo, nil
 }
 
@@ -54,14 +50,13 @@ func MapToMetadata(m map[string]interface{}) (protocols.Metadata, error) {
 		return md, fmt.Errorf("metadata.contentType is required")
 	}
 
-	if m["encryptionAlgorithm"] != nil {
-		md.EncryptionAlgorithm = m["encryptionAlgorithm"].(string)
-	}
-	if m["encryptionKey"] != nil {
-		md.EncryptionKey = m["encryptionKey"].(string)
-	}
 	if m["encryption"] != nil {
-		md.Encryption = m["encryption"].(bool)
+		md.Encryption = &protocols.Encryption{
+			Algorithm:         m["encryption"].(map[string]interface{})["algorithm"].(string),
+			SecretKey:         m["encryption"].(map[string]interface{})["secretKey"].(string),
+			EncryptionPayload: m["encryption"].(map[string]interface{})["encryptionPayload"].(bool),
+			EncryptionID:      m["encryption"].(map[string]interface{})["encryptionID"].(bool),
+		}
 	}
 
 	return md, nil

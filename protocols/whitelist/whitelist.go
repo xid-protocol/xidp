@@ -11,7 +11,7 @@ func NewWhitelist(xid string, operation string, payload interface{}) *protocols.
 		Name:    viper.GetString("xid.name"),
 		Xid:     xid,
 		Version: viper.GetString("xid.version"),
-		Metadata: protocols.Metadata{
+		Metadata: &protocols.Metadata{
 			CreatedAt:   common.GetTimestamp(),
 			CardId:      common.GenerateCardId(),
 			Operation:   operation,

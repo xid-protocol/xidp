@@ -1,6 +1,7 @@
 package protocols
 
 import (
+	"log"
 	"strings"
 
 	"github.com/google/uuid"
@@ -8,51 +9,45 @@ import (
 )
 
 const (
-	XIDVersion = "0.1.3"
-)
-
-const (
-	NoEncryption bool = false
-	Encryption   bool = true
+	XIDVersion = "0.1.4"
 )
 
 type Info struct {
 	ID   string `json:"id" bson:"id"`
 	Type string `json:"type" bson:"type"`
-	//是否加密ID
-	Encryption bool `json:"encryption" bson:"encryption"`
+}
+
+type Encryption struct {
+	Algorithm         string `json:"algorithm" bson:"algorithm"`
+	SecretKey         string `json:"secretKey" bson:"secretKey"`
+	EncryptionPayload bool   `json:"encryptionPayload" bson:"encryptionPayload"`
+	EncryptionID      bool   `json:"encryptionID" bson:"encryptionID"`
 }
 
 type Metadata struct {
-	//加密算法
-	EncryptionAlgorithm string `json:"encryptionAlgorithm" bson:"encryptionAlgorithm"`
-	//加密key
-	EncryptionKey string `json:"encryptionKey" bson:"encryptionKey"`
-	//是否加密payload
-	Encryption  bool   `json:"encryptionPayload" bson:"encryptionPayload"`
-	CreatedAt   int64  `json:"createdAt" bson:"createdAt"`
-	Operation   string `json:"operation" bson:"operation"`
-	CardId      string `json:"cardId" bson:"cardId"`
-	Path        string `json:"path" bson:"path"`
-	ContentType string `json:"contentType" bson:"contentType"`
+	CreatedAt   int64       `json:"createdAt" bson:"createdAt"`
+	Encryption  *Encryption `json:"encryption" bson:"encryption"`
+	Operation   string      `json:"operation" bson:"operation"`
+	CardId      string      `json:"cardId" bson:"cardId"`
+	Path        string      `json:"path" bson:"path"`
+	ContentType string      `json:"contentType" bson:"contentType"`
 }
 
 type XID struct {
 	Name     string      `json:"name" bson:"name"`
 	Xid      string      `json:"xid" bson:"xid"`
-	Info     Info        `json:"info" bson:"info"`
+	Info     *Info       `json:"info" bson:"info"`
 	Version  string      `json:"version" bson:"version"`
-	Metadata Metadata    `json:"metadata" bson:"metadata"`
+	Metadata *Metadata   `json:"metadata" bson:"metadata"`
 	Payload  interface{} `json:"payload" bson:"payload"`
 }
 
-func NewInfo(id string, xidType string, encryption bool) Info {
+func NewInfo(id string, xidType string) Info {
 	//id can't be empty
 	//xidType can't be empty
 	return Info{
-		ID:         id,
-		Type:       xidType,
-		Encryption: encryption,
+		ID:   id,
+		Type: xidType,
 	}
 }
 
@@ -66,17 +61,11 @@ func NewMetadata(operation string, path string, contentType string) Metadata {
 	}
 }
 
-func NewXID(info Info, metadata Metadata, payload interface{}) *XID {
+func NewXID(info *Info, metadata *Metadata, payload interface{}) *XID {
 
 	//如果加密key不为空，
-	if metadata.EncryptionKey != "" && metadata.EncryptionAlgorithm != "" {
-		//加密payload
-		if metadata.Encryption {
-			//加密payload
-		}
-		if info.Encryption {
-			//加密ID
-		}
+	if metadata.Encryption != nil {
+		log.Println("encryption", metadata.Encryption)
 	}
 
 	newXID := XID{
