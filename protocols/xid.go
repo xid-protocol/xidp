@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	XIDVersion = "0.1.1"
+	XIDVersion = "0.1.3"
 )
 
 const (
