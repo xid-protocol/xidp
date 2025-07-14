@@ -81,7 +81,7 @@ func NewXID(info Info, metadata Metadata, payload interface{}) *XID {
 
 	newXID := XID{
 		Name:     "xid-protocol",
-		Xid:      GetXID(info.ID),
+		Xid:      GenerateXid(info.ID),
 		Info:     info,
 		Version:  XIDVersion,
 		Metadata: metadata,
@@ -91,7 +91,7 @@ func NewXID(info Info, metadata Metadata, payload interface{}) *XID {
 }
 
 // 传入明文，生成xid
-func GenerateXID(id string) string {
+func GenerateXid(id string) string {
 	xidNS := uuid.NewSHA1(uuid.NameSpaceURL, []byte("xid-protocol"))
 	normalized := strings.ToLower(strings.TrimSpace(id))
 	xid := uuid.NewSHA1(xidNS, []byte(normalized))
