@@ -17,7 +17,7 @@ const (
 )
 
 type Info struct {
-	ID   string `json:"plainID" bson:"plainID"`
+	ID   string `json:"id" bson:"id"`
 	Type string `json:"type" bson:"type"`
 	//是否加密ID
 	Encryption bool `json:"encryption" bson:"encryption"`
