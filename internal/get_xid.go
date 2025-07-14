@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/xid-protocol/xidp/db/models"
 	"github.com/xid-protocol/xidp/db/repositories"
+	"github.com/xid-protocol/xidp/protocols"
 )
 
-func GetXid(username string, source string) (*models.XID, error) {
+func GetXid(username string, source string) (*protocols.XID, error) {
 	ctx := context.Background()
 	path := "/info"
 	if source != "" {

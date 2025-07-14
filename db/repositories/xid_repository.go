@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/xid-protocol/xidp/db"
-	"github.com/xid-protocol/xidp/db/models"
+	"github.com/xid-protocol/xidp/protocols"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -31,16 +31,16 @@ func (r *XIDRepository) CheckEmailExists(ctx context.Context, email string) (boo
 }
 
 // 插入新记录
-func (r *XIDRepository) Insert(ctx context.Context, xid *models.XID) error {
+func (r *XIDRepository) Insert(ctx context.Context, xid *protocols.XID) error {
 	_, err := r.collection.InsertOne(ctx, xid)
 	return err
 }
 
-func (r *XIDRepository) FindByName(ctx context.Context, name string) (*models.XID, error) {
+func (r *XIDRepository) FindByName(ctx context.Context, name string) (*protocols.XID, error) {
 	filter := bson.M{
 		"name": name,
 	}
-	var xidInfo models.XID
+	var xidInfo protocols.XID
 	err := r.collection.FindOne(ctx, filter).Decode(&xidInfo)
 	if err != nil {
 		return nil, err
