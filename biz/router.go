@@ -12,6 +12,7 @@ func RegisterRouter(r *gin.Engine) {
 		{
 			// xidGroup.GET("/get", v1.GetXid)
 			xidGroup.POST("/create", v1.CreateXid)
+			xidGroup.POST("/id/create", v1.CreateXidId)
 
 		}
 		notifyGroup := apiv1Group.Group("/notify")

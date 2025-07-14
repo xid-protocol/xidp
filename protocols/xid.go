@@ -6,6 +6,10 @@ import (
 	"github.com/xid-protocol/xidp/common"
 )
 
+const (
+	XIDVersion = "0.1.0"
+)
+
 type XIDType string
 
 const (
@@ -71,12 +75,12 @@ func MapToMetadata(m map[string]interface{}) (Metadata, error) {
 	return md, nil
 }
 
-func NewXID(xid string, version string, xidType XIDType, metadata Metadata, payload interface{}) *XID {
+func NewXID(id string, xidType XIDType, metadata Metadata, payload interface{}) *XID {
 	newXID := XID{
 		Name:    "xid-protocol",
-		Xid:     xid,
+		Xid:     id,
 		Type:    xidType,
-		Version: version,
+		Version: XIDVersion,
 		Metadata: Metadata{
 			CreatedAt:   common.GetTimestamp(),
 			CardId:      common.GenerateCardId(),

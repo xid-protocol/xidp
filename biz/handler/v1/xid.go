@@ -79,3 +79,21 @@ func CreateXid(c *gin.Context) {
 
 	c.JSON(200, gin.H{"xid": xid})
 }
+
+func CreateXidId(c *gin.Context) {
+	//获取body里的text参数，json格式
+
+	var req map[string]interface{}
+	err := c.BindJSON(&req)
+	if err != nil {
+		c.JSON(200, gin.H{"error": err.Error()})
+		return
+	}
+
+	id := common.GenerateId(req["text"].(string))
+
+	c.JSON(200, gin.H{
+		"xid":  id,
+		"text": req["text"].(string),
+	})
+}
