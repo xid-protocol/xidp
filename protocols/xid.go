@@ -46,6 +46,26 @@ type XID struct {
 	Payload  interface{} `json:"payload" bson:"payload"`
 }
 
+func NewInfo(id string, xidType string, encryption bool) Info {
+	//id can't be empty
+	//xidType can't be empty
+	return Info{
+		ID:         id,
+		Type:       xidType,
+		Encryption: encryption,
+	}
+}
+
+func NewMetadata(operation string, path string, contentType string) Metadata {
+	return Metadata{
+		CreatedAt:   common.GetTimestamp(),
+		CardId:      common.GenerateCardId(),
+		Operation:   operation,
+		Path:        path,
+		ContentType: contentType,
+	}
+}
+
 func NewXID(info Info, metadata Metadata, payload interface{}) *XID {
 
 	//如果加密key不为空，
@@ -60,18 +80,12 @@ func NewXID(info Info, metadata Metadata, payload interface{}) *XID {
 	}
 
 	newXID := XID{
-		Name:    "xid-protocol",
-		Xid:     GetXID(info.ID),
-		Info:    info,
-		Version: XIDVersion,
-		Metadata: Metadata{
-			CreatedAt:   common.GetTimestamp(),
-			CardId:      common.GenerateCardId(),
-			Operation:   metadata.Operation,
-			Path:        metadata.Path,
-			ContentType: metadata.ContentType,
-		},
-		Payload: payload,
+		Name:     "xid-protocol",
+		Xid:      GetXID(info.ID),
+		Info:     info,
+		Version:  XIDVersion,
+		Metadata: metadata,
+		Payload:  payload,
 	}
 	return &newXID
 }
