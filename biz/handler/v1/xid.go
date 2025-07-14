@@ -51,7 +51,7 @@ func Getxid(c *gin.Context) {
 
 	id := req["id"].(string)
 
-	xid := protocols.GetXID(id)
+	xid := protocols.GenerateXid(id)
 
 	c.JSON(200, gin.H{
 		"xid": xid,
