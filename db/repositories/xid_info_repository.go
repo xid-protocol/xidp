@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 
-	"github.com/colin-404/logx"
 	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/protocols"
 	"go.mongodb.org/mongo-driver/bson"
@@ -21,16 +20,19 @@ func NewXidInfoRepository() *XidInfoRepository {
 }
 
 // 检测/info/sealsuite是否存在
-func (r *XidInfoRepository) CheckXidInfoExists(ctx context.Context, xid string, path string) (bool, error) {
-	logx.Infof("xid: %s, path: %s", xid, path)
-	filter := bson.M{
-		"xid":           xid,
-		"metadata.path": path,
-	}
+// func (r *XidInfoRepository) CheckXidExists(ctx context.Context, xid string, path string) (bool, int, error) {
+// 	logx.Infof("xid: %s, path: %s", xid, path)
+// 	filter := bson.M{
+// 		"xid":           xid,
+// 		"metadata.path": path,
+// 	}
 
-	count, err := r.collection.CountDocuments(ctx, filter)
-	return count > 0, err
-}
+// 	count, err := r.collection.CountDocuments(ctx, filter)
+// 	if count == 0 {
+// 		return false, 0, err
+// 	}
+// 	return true, int(count), nil
+// }
 
 // 插入新记录
 func (r *XidInfoRepository) Insert(ctx context.Context, xid *protocols.XID) error {
@@ -59,16 +61,24 @@ func (r *XidInfoRepository) FindByName(ctx context.Context, name string, path st
 	return &xidRecord, nil
 }
 
-func (r *XidInfoRepository) FindByXid(ctx context.Context, xid string) (*protocols.XID, error) {
+func (r *XidInfoRepository) FindAllByXid(ctx context.Context, xid string) ([]*protocols.XID, error) {
 	filter := bson.M{
 		"xid": xid,
 	}
-	var xidRecord protocols.XID
-	err := r.collection.FindOne(ctx, filter).Decode(&xidRecord)
+	var xidRecords []*protocols.XID
+	cursor, err := r.collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	return &xidRecord, nil
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var xidRecord protocols.XID
+		if err := cursor.Decode(&xidRecord); err != nil {
+			return nil, err
+		}
+		xidRecords = append(xidRecords, &xidRecord)
+	}
+	return xidRecords, nil
 }
 
 func (r *XidInfoRepository) FindOneByXidAndPath(ctx context.Context, id string, path string) (*protocols.XID, error) {

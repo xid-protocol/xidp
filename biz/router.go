@@ -35,5 +35,9 @@ func RegisterRouter(r *gin.Engine) {
 			// externalAttackSurface.POST("/delete", v1.DeleteExternalAttackSurface)
 
 		}
+		whitelistGroup := protocolGroup.Group("/whitelist")
+		{
+			whitelistGroup.POST("/create", v1.CreateWhitelist)
+		}
 	}
 }

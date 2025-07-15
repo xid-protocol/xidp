@@ -1,24 +1,61 @@
 package whitelist
 
 import (
-	"github.com/spf13/viper"
-	"github.com/xid-protocol/xidp/common"
+	"context"
+	"errors"
+
+	"github.com/colin-404/logx"
+	xid_info_repositories "github.com/xid-protocol/xidp/db/repositories"
+	protocols_repositories "github.com/xid-protocol/xidp/db/repositories/protocols_repositories"
 	"github.com/xid-protocol/xidp/protocols"
 )
 
-func NewWhitelist(xid string, operation string, payload interface{}) *protocols.XID {
-	xiddata := protocols.XID{
-		Name:    viper.GetString("xid.name"),
-		Xid:     xid,
-		Version: viper.GetString("xid.version"),
-		Metadata: &protocols.Metadata{
-			CreatedAt:   common.GetTimestamp(),
-			CardId:      common.GenerateCardId(),
-			Operation:   operation,
-			Path:        "/protocol/whitelist",
-			ContentType: "application/json",
-		},
-		Payload: payload,
+type AWSOpenPort struct {
+	InstanceID string `json:"instanceId"`
+	Cidr       string `json:"cidr"`
+	FromPort   int    `json:"fromPort"`
+	ToPort     int    `json:"toPort"`
+	Protocol   string `json:"protocol"`
+}
+
+type Whitelist struct {
+	Type        string      `json:"type"`
+	Value       interface{} `json:"value"`
+	Sha256Value string      `json:"sha256Value"`
+}
+
+func NewWhitelist(xid string, whitelistType string, payload Whitelist) (*protocols.XID, error) {
+
+	whitelistRepository := protocols_repositories.NewWhitelistRepository()
+	xidInfoRepository := xid_info_repositories.NewXidInfoRepository()
+	xidInfo, err := xidInfoRepository.FindOneByXid(context.Background(), xid)
+	if err != nil {
+		logx.Errorf("NewWhitelist: %v", err)
+		return nil, err
 	}
-	return &xiddata
+
+	metadata := protocols.NewMetadata("create", "/protocols/whitelist", "application/json")
+
+	NewXID := protocols.NewXID(xidInfo.Info, &metadata, payload)
+
+	//检测数据库中是否存在相同的whitelist
+	xidInfos, err := xidInfoRepository.FindAllByXid(context.Background(), xid)
+	if err != nil {
+		logx.Errorf("NewWhitelist: %v", err)
+		return nil, err
+	}
+	if len(xidInfos) > 0 {
+		//检测是否有重复的
+		for _, xidInfo := range xidInfos {
+			//对比Sha256Value
+			if xidInfo.Payload.(Whitelist).Sha256Value == payload.Sha256Value {
+				logx.Errorf("Whitelist already exists: %v", err)
+				return xidInfo, errors.New("Whitelist already exists")
+			}
+		}
+	}
+
+	whitelistRepository.Insert(context.Background(), NewXID)
+
+	return NewXID, nil
 }

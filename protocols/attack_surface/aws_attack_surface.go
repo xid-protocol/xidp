@@ -42,12 +42,12 @@ func NewAWSAttackSurface(id string) *AWSAttackSurface {
 	var awsEas AWSAttackSurface
 	ctx := context.Background()
 	repository := repositories.NewXidInfoRepository()
-	secgroupXid, err := repository.FindOneByXidAndPath(ctx, id, "/info/aws/secgroup")
+	secgroupXID, err := repository.FindOneByXidAndPath(ctx, id, "/info/aws/secgroup")
 	if err != nil {
 		return nil
 	}
 
-	// logx.Infof("secgroupXid: %v", secgroupXid)
+	// logx.Infof("secgroupXID: %v", secgroupXID)
 
 	instanceXid, err := repository.FindOneByXidAndPath(ctx, id, "/info/aws/instance")
 	if err != nil {
@@ -108,7 +108,7 @@ func NewAWSAttackSurface(id string) *AWSAttackSurface {
 
 	//---------------------secgroup---------------------
 
-	secgroupJsonBytes, err := json.Marshal(secgroupXid.Payload)
+	secgroupJsonBytes, err := json.Marshal(secgroupXID.Payload)
 	if err != nil {
 		fmt.Println(err)
 		return nil
