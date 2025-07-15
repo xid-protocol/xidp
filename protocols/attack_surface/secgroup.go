@@ -1,12 +1,11 @@
 package attack_surface
 
 import (
-	"log"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/colin-404/logx"
 	"github.com/spf13/viper"
 )
 
@@ -39,7 +38,7 @@ func GetSgByID(securityGroupID *string, ec2Cli *ec2.EC2) *ec2.DescribeSecurityGr
 	securityGroupOutput, err := ec2Cli.DescribeSecurityGroups(securityGroupInput)
 	// log.Println(securityGroupOutput)
 	if err != nil {
-		log.Println("Failed to describe security groups:", err)
+		logx.Errorf("Failed to describe security groups: %v", err)
 	}
 
 	return securityGroupOutput
@@ -53,7 +52,7 @@ func SecGroupMonitor() *map[string][]*ec2.DescribeSecurityGroupsOutput {
 	for region, client := range clients {
 		result, err := client.DescribeInstances(nil)
 		if err != nil {
-			log.Printf("no instances in this region %s: %v", region, err)
+			logx.Errorf("no instances in this region %s: %v", region, err)
 			continue
 		}
 
@@ -77,7 +76,7 @@ func GetAllRegionEc2Clients() map[string]*ec2.EC2 {
 	// 获取所有可用区域
 	regions, err := GetAllRegions()
 	if err != nil {
-		log.Println(err)
+		logx.Errorf("GetAllRegionEc2Clients: %v", err)
 	}
 
 	// 创建所有区域的客户端
@@ -88,7 +87,7 @@ func GetAllRegionEc2Clients() map[string]*ec2.EC2 {
 			Credentials: credentials.NewStaticCredentials(viper.GetString("AWS.AwsApiKey"), viper.GetString("AWS.AwsSecretKey"), ""),
 		})
 		if err != nil {
-			log.Printf("Failed to create session for region %s: %v", region, err)
+			logx.Errorf("Failed to create session for region %s: %v", region, err)
 			continue
 		}
 		clients[region] = ec2.New(sess)

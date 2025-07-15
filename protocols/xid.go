@@ -1,9 +1,9 @@
 package protocols
 
 import (
-	"log"
 	"strings"
 
+	"github.com/colin-404/logx"
 	"github.com/google/uuid"
 	"github.com/xid-protocol/xidp/common"
 )
@@ -65,7 +65,7 @@ func NewXID(info *Info, metadata *Metadata, payload interface{}) *XID {
 
 	//如果加密key不为空，
 	if metadata.Encryption != nil {
-		log.Println("encryption", metadata.Encryption)
+		logx.Infof("encryption: %v", metadata.Encryption)
 	}
 
 	newXID := XID{

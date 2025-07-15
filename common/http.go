@@ -2,9 +2,9 @@ package common
 
 import (
 	"errors"
-	"log"
 	"time"
 
+	"github.com/colin-404/logx"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -37,12 +37,12 @@ func DoHttp(method, url string, body interface{}, headers map[string]string) (*r
 
 	// Add other methods as needed
 	default:
-		log.Printf("Unsupported HTTP method: %s", method)
+		logx.Errorf("Unsupported HTTP method: %s", method)
 		return nil, errors.New("unsupported http method")
 	}
 
 	if err != nil {
-		log.Println(err)
+		logx.Errorf("DoHttp: %v", err)
 		return nil, err
 	}
 

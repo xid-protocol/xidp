@@ -1,8 +1,7 @@
 package v1
 
 import (
-	"log"
-
+	"github.com/colin-404/logx"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/xid-protocol/xidp/common"
@@ -34,7 +33,7 @@ func Notify(c *gin.Context) {
 
 func SendToLark(message string) {
 	webhookURL := viper.GetString("Notify.lark_custom_bot_webhook")
-	log.Println(webhookURL)
+	logx.Infof("SendToLark: %s", webhookURL)
 
 	// 创建Lark消息结构
 	// larkMessage := LarkMessage{
