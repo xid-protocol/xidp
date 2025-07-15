@@ -28,7 +28,7 @@ func NewWhitelist(xid string, whitelistType string, payload Whitelist) (*protoco
 
 	whitelistRepository := protocols_repositories.NewWhitelistRepository()
 	xidInfoRepository := xid_info_repositories.NewXidInfoRepository()
-	xidInfo, err := xidInfoRepository.FindOneByXid(context.Background(), xid)
+	xidInfo, err := xidInfoRepository.FindByName(context.Background(), xid, "/protocols/whitelist")
 	if err != nil {
 		logx.Errorf("NewWhitelist: %v", err)
 		return nil, err
