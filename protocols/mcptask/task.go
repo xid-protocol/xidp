@@ -21,7 +21,7 @@ const (
 )
 
 type Task struct {
-	ThreadID string         `json:"threadId" bson:"threadId"`
+	ThreadID string         `json:"threadId,omitempty" bson:"threadId,omitempty"`
 	Status   TaskState      `json:"status" bson:"status"`
 	DataType string         `json:"dataType" bson:"dataType"`
 	Data     map[string]any `json:"payload" bson:"payload"`
@@ -29,7 +29,7 @@ type Task struct {
 	Error    string         `json:"error" bson:"error"`
 }
 
-func NewTask(threadId string) *protocols.XID {
+func NewTask() *protocols.XID {
 	taskid := common.GenerateId()
 
 	info := protocols.NewInfo(taskid, "mcptask")
@@ -40,8 +40,7 @@ func NewTask(threadId string) *protocols.XID {
 		"/protocols/mcptask",
 		"application/json")
 	payload := &Task{
-		ThreadID: threadId,
-		Status:   TaskStateInit,
+		Status: TaskStateInit,
 	}
 	xid := protocols.NewXID(&info, &md, payload)
 	return xid
