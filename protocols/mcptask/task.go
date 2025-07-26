@@ -33,6 +33,7 @@ type Step struct {
 }
 
 type Task struct {
+	TaskID      string   `json:"taskId" bson:"taskId"`
 	ThreadID    string   `json:"threadId,omitempty" bson:"threadId,omitempty"` //user chat thread id
 	TaskName    string   `json:"taskName,omitempty" bson:"taskName,omitempty"`
 	UserInput   string   `json:"userInput,omitempty" bson:"userInput,omitempty"`
