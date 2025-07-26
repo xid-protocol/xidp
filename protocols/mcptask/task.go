@@ -46,7 +46,7 @@ func NewTask() *protocols.XID {
 	return xid
 }
 
-func TaskEvent(taskid string, threadId string, dataType string, data map[string]any) *protocols.XID {
+func CreateTaskEvent(taskid string, threadId string, dataType string, data map[string]any) *protocols.XID {
 	task := &Task{
 		ThreadID: threadId,
 		Status:   TaskStateWorking,
