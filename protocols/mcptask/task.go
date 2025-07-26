@@ -34,9 +34,8 @@ func NewTask(threadId string) *protocols.XID {
 
 	info := protocols.NewInfo(taskid, "mcptask")
 
-	var md protocols.Metadata
 	//添加必填字段
-	md = protocols.NewMetadata(
+	md := protocols.NewMetadata(
 		protocols.OperationCreate,
 		"/protocols/mcptask",
 		"application/json")
