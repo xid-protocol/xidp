@@ -42,7 +42,7 @@ func MapToMetadata(m map[string]interface{}) (protocols.Metadata, error) {
 		return md, fmt.Errorf("metadata.path is required")
 	}
 	//必须有operation
-	if md.Operation, ok = m["operation"].(string); !ok {
+	if md.Operation, ok = m["operation"].(protocols.OperationType); !ok {
 		return md, fmt.Errorf("metadata.operation is required")
 	}
 	//必须有contentType

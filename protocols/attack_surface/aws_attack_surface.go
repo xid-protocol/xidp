@@ -19,23 +19,14 @@ type Rule struct {
 	Iprange  []string `json:"iprange"`
 }
 
-type OpenPort struct {
-	FromPort int    `json:"fromPort"`
-	ToPort   int    `json:"toPort"`
-	Protocol string `json:"protocol"`
-	Cidr     string `json:"cidr"`
-}
-
 // path /protocols/external-attack-surface/aws-instance
 type AWSAttackSurface struct {
-	InstanceID string            `json:"instanceId"`
-	Tags       map[string]string `json:"tags"`
-	PublicIPs  []string          `json:"publicIps"`
-	PrivateIPs []string          `json:"privateIps"`
-	// Region     string            `json:"region"`
-	// AccountID  string            `json:"accountId"`
-	Rules     []Rule     `json:"rules"`
-	OpenPorts []OpenPort `json:"openPorts"`
+	InstanceID   string            `json:"instanceId"`
+	InstanceName string            `json:"instanceName"`
+	Tags         map[string]string `json:"tags"`
+	PublicIPs    []string          `json:"publicIps"`
+	PrivateIPs   []string          `json:"privateIps"`
+	Rules        []Rule            `json:"rules"`
 }
 
 func NewAWSAttackSurface(id string) *AWSAttackSurface {
@@ -75,6 +66,9 @@ func NewAWSAttackSurface(id string) *AWSAttackSurface {
 			awsEas.Tags[k] = v
 		}
 	}
+
+	// InstanceName
+	awsEas.InstanceName = gjson.Get(jsonStr, `#(Key=="Name").Value`).String()
 
 	// ---------- 正则提取公网 IP ----------
 	// 匹配 "Key":"publicip" ... "Value":"xxx"
@@ -120,7 +114,6 @@ func NewAWSAttackSurface(id string) *AWSAttackSurface {
 	securitygroups := gjson.Get(secgroupJsonStr, `0.#(Key=="securitygroups").Value`).Array()
 	fmt.Println(securitygroups)
 	var allRules []Rule
-	var openPorts []OpenPort
 
 	for _, sg := range securitygroups {
 		// 每个 sg 仍是一个 Key-Value 数组，需要再次过滤
@@ -144,31 +137,10 @@ func NewAWSAttackSurface(id string) *AWSAttackSurface {
 				Iprange:  cidrs,
 			})
 
-			for _, cidr := range cidrs {
-				if cidr == ExposureIprange {
-					openPorts = append(openPorts, OpenPort{
-						FromPort: from,
-						ToPort:   to,
-						Protocol: proto,
-						Cidr:     cidr,
-					})
-				}
-			}
-
-		}
-
-		if useridgrouppairs := sg.Get(`#(Key=="useridgrouppairs").Value`).Array(); len(useridgrouppairs) > 0 {
-			for _, useridgrouppair := range useridgrouppairs {
-				groupid := useridgrouppair.Get(`#(Key=="groupid").Value`).String()
-				repository.FindOneByXidAndPath(ctx, groupid, "/info/aws/secgroup")
-				// securityGroupOutput := GetSgByID(groupid, ec2Cli)
-				fmt.Println(".......")
-			}
 		}
 	}
 
 	awsEas.Rules = allRules
-	awsEas.OpenPorts = openPorts
 
 	return &awsEas
 }

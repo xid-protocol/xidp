@@ -7,8 +7,8 @@ import (
 	uxid "github.com/rs/xid"
 )
 
-// uuidv5，表示该条数据的身份ID
-func GenerateId(name string) string {
+// 传入明文生成XID
+func GenerateXid(name string) string {
 	xidNS := uuid.NewSHA1(uuid.NameSpaceURL, []byte("xid-protocol"))
 	normalized := strings.ToLower(strings.TrimSpace(name))
 	xid := uuid.NewSHA1(xidNS, []byte(normalized))
@@ -17,6 +17,12 @@ func GenerateId(name string) string {
 
 // 唯一随机ID，表示该条数据的ID
 func GenerateCardId() string {
+	uxid := uxid.New()
+	return uxid.String()
+}
+
+// 唯一随机ID，表示该条数据的ID
+func GenerateId() string {
 	uxid := uxid.New()
 	return uxid.String()
 }

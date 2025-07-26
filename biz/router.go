@@ -28,8 +28,10 @@ func RegisterRouter(r *gin.Engine) {
 
 		protocolGroup := apiv1Group.Group("/protocols")
 		{
-			externalAttackSurface := protocolGroup.Group("/attack-surface")
-			externalAttackSurface.GET("/get", v1.GetAttackSurface)
+			attackSurface := protocolGroup.Group("/attack-surface")
+			attackSurface.GET("/list", v1.GetAttackSurface)
+			// attackSurface.POST("/aws/", v1.CreateAttackSurface)
+
 			// externalAttackSurface.POST("/create", v1.CreateExternalAttackSurface)
 			// externalAttackSurface.POST("/update", v1.UpdateExternalAttackSurface)
 			// externalAttackSurface.POST("/delete", v1.DeleteExternalAttackSurface)
