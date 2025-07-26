@@ -25,20 +25,24 @@ type Step struct {
 	StepName  string         `json:"stepName,omitempty" bson:"stepName,omitempty"`
 	MCPServer string         `json:"mcpServer" bson:"mcpServer"`
 	ToolName  string         `json:"toolName" bson:"toolName"`
-	Params    map[string]any `json:"params" bson:"params"` //tool params
+	Targets   string         `json:"targets" bson:"targets"` //target url
+	Params    map[string]any `json:"params" bson:"params"`   //tool params
 	Status    State          `json:"status" bson:"status"`
 	Result    string         `json:"result" bson:"result"`
 	Error     string         `json:"error" bson:"error"`
 }
 
 type Task struct {
-	ThreadID string   `json:"threadId,omitempty" bson:"threadId,omitempty"` //user chat thread id
-	TaskName string   `json:"taskName,omitempty" bson:"taskName,omitempty"`
-	History  []string `json:"history" bson:"history"` //user input history
-	Status   State    `json:"status" bson:"status"`
-	Steps    []Step   `json:"steps" bson:"steps"`
-	Result   string   `json:"result" bson:"result"`
-	Error    string   `json:"error" bson:"error"`
+	ThreadID    string   `json:"threadId,omitempty" bson:"threadId,omitempty"` //user chat thread id
+	TaskName    string   `json:"taskName,omitempty" bson:"taskName,omitempty"`
+	UserInput   string   `json:"userInput,omitempty" bson:"userInput,omitempty"`
+	Description string   `json:"description,omitempty" bson:"description,omitempty"`
+	Target      string   `json:"target,omitempty" bson:"target,omitempty"` //target url
+	History     []string `json:"history" bson:"history"`                   //user input history
+	Status      State    `json:"status" bson:"status"`
+	Steps       []Step   `json:"steps" bson:"steps"`
+	Result      string   `json:"result" bson:"result"`
+	Error       string   `json:"error" bson:"error"`
 }
 
 func InitTask() *protocols.XID {
@@ -61,13 +65,24 @@ func InitTask() *protocols.XID {
 	return xid
 }
 
-func CreateTaskEvent(taskid string, threadId string, step Step) *protocols.XID {
-	task := &Task{
-		ThreadID: threadId,
-		Steps:    []Step{step},
-	}
-	info := protocols.NewInfo(taskid, "mcptask")
-	metadata := protocols.NewMetadata(protocols.OperationUpdate, "/protocols/mcptask", "application/json")
-	xid := protocols.NewXID(&info, &metadata, task)
-	return xid
-}
+// func CreateTaskEvent(taskid string, threadId string, step Step) *protocols.XID {
+// 	task := &Task{
+// 		ThreadID: threadId,
+// 		Steps:    []Step{step},
+// 	}
+// 	info := protocols.NewInfo(taskid, "mcptask")
+// 	metadata := protocols.NewMetadata(protocols.OperationUpdate, "/protocols/mcptask", "application/json")
+// 	xid := protocols.NewXID(&info, &metadata, task)
+// 	return xid
+// }
+
+// func CreateStep(taskid string, threadId string, step Step) *protocols.XID {
+// 	task := &Task{
+// 		ThreadID: threadId,
+// 		Steps:    []Step{step},
+// 	}
+// 	info := protocols.NewInfo(taskid, "mcptask")
+// 	metadata := protocols.NewMetadata(protocols.OperationUpdate, "/protocols/mcptask", "application/json")
+// 	xid := protocols.NewXID(&info, &metadata, task)
+// 	return xid
+// }
