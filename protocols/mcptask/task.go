@@ -25,7 +25,7 @@ type Step struct {
 	StepName  string         `json:"stepName,omitempty" bson:"stepName,omitempty"`
 	MCPServer string         `json:"mcpServer" bson:"mcpServer"`
 	ToolName  string         `json:"toolName" bson:"toolName"`
-	Targets   string         `json:"targets" bson:"targets"` //target url
+	Targets   []string       `json:"targets" bson:"targets"` //target url
 	Params    map[string]any `json:"params" bson:"params"`   //tool params
 	Status    State          `json:"status" bson:"status"`
 	Result    string         `json:"result" bson:"result"`
@@ -37,8 +37,8 @@ type Task struct {
 	TaskName    string   `json:"taskName,omitempty" bson:"taskName,omitempty"`
 	UserInput   string   `json:"userInput,omitempty" bson:"userInput,omitempty"`
 	Description string   `json:"description,omitempty" bson:"description,omitempty"`
-	Target      string   `json:"target,omitempty" bson:"target,omitempty"` //target url
-	History     []string `json:"history" bson:"history"`                   //user input history
+	Targets     []string `json:"targets,omitempty" bson:"targets,omitempty"` //target url
+	History     []string `json:"history" bson:"history"`                     //user input history
 	Status      State    `json:"status" bson:"status"`
 	Steps       []Step   `json:"steps" bson:"steps"`
 	Result      string   `json:"result" bson:"result"`
