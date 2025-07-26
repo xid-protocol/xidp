@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
@@ -15,7 +14,7 @@ var (
 )
 
 // Backend -> Frontend 输出消息
-type SSEEvent struct {
+type ChatEvent struct {
 	ThreadID string `json:"threadID"`
 	Agent    string `json:"agent,omitempty"`
 	MsgID    string `json:"msgID,omitempty"` // 用于标识消息的唯一ID
@@ -25,8 +24,7 @@ type SSEEvent struct {
 
 // ThreadManager 管理每个线程的独立通道
 type ThreadManager struct {
-	channels    map[string]chan SSEEvent      // threadID -> 响应通道
-	connections map[string]*gin.Context       // threadID -> 当前连接
+	channels    map[string]chan ChatEvent     // threadID -> 响应通道
 	ctxMap      map[string]context.Context    // threadID -> 上下文
 	cancelMap   map[string]context.CancelFunc // threadID -> 取消函数
 	status      map[string]string             // threadID -> 状态 (running/cancelled/completed)
@@ -43,8 +41,7 @@ type ThreadManager struct {
 
 func newThreadManager() *ThreadManager {
 	return &ThreadManager{
-		channels:    make(map[string]chan SSEEvent),
-		connections: make(map[string]*gin.Context),
+		channels:    make(map[string]chan ChatEvent),
 		cancelMap:   make(map[string]context.CancelFunc),
 		ctxMap:      make(map[string]context.Context),
 		status:      make(map[string]string),
@@ -60,7 +57,7 @@ func ThreadMan() *ThreadManager {
 }
 
 // StartNewThread 开始新的thread
-func (tm *ThreadManager) StartNewThread(c *gin.Context, chatRequest ChatRequest) (chan SSEEvent, string) {
+func (tm *ThreadManager) StartNewThread(chatRequest ChatRequest) (chan ChatEvent, string) {
 	threadID := uuid.NewString()
 
 	tm.mu.Lock()
@@ -70,14 +67,13 @@ func (tm *ThreadManager) StartNewThread(c *gin.Context, chatRequest ChatRequest)
 	processCtx, cancel := context.WithCancel(context.Background())
 
 	// 创建响应通道
-	ch := make(chan SSEEvent, 50)
+	ch := make(chan ChatEvent, 50)
 
 	// 注册thread
 	tm.channels[threadID] = ch
 	tm.cancelMap[threadID] = cancel
 	tm.ctxMap[threadID] = processCtx
 	tm.status[threadID] = "running"
-	tm.connections[threadID] = c
 	tm.ChatRequest[threadID] = chatRequest
 
 	return ch, threadID
@@ -96,7 +92,7 @@ func (tm *ThreadManager) CancelThread(threadID string) bool {
 	cancel()
 
 	// （可选）推送一条取消事件，前端立即显示
-	tm.SendToThread(threadID, SSEEvent{
+	tm.SendToThread(threadID, ChatEvent{
 		ThreadID: threadID,
 		Agent:    "system",
 		Content:  "用户已取消",
@@ -130,12 +126,11 @@ func (tm *ThreadManager) CleanupThread(threadID string) {
 		delete(tm.channels, threadID)
 	}
 
-	delete(tm.connections, threadID)
 	delete(tm.status, threadID)
 }
 
 // SendToThread 发送消息到指定thread（检查是否已取消）
-func (tm *ThreadManager) SendToThread(threadID string, event SSEEvent) bool {
+func (tm *ThreadManager) SendToThread(threadID string, event ChatEvent) bool {
 	tm.mu.RLock()
 	ch, exists := tm.channels[threadID]
 	status := tm.status[threadID]
