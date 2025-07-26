@@ -1,4 +1,4 @@
-package chat
+package aichat
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func (tm *ThreadManager) SendAgentStart(threadID string, agent string, content string) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    agent,
 		Content:  fmt.Sprintf("开始执行: %s", content),
@@ -21,7 +21,7 @@ func (tm *ThreadManager) SendAgentStart(threadID string, agent string, content s
 }
 
 func (tm *ThreadManager) SendStart(threadID string) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    "system",
 		Content:  "开始处理您的请求...",
@@ -32,7 +32,7 @@ func (tm *ThreadManager) SendStart(threadID string) {
 }
 
 func (tm *ThreadManager) SendToolResult(threadID string, agent string, content string) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    agent,
 		Content:  content,
@@ -43,7 +43,7 @@ func (tm *ThreadManager) SendToolResult(threadID string, agent string, content s
 }
 
 func (tm *ThreadManager) SendToolRuning(threadID string, agent string, content string) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    agent,
 		Content:  content,
@@ -54,7 +54,7 @@ func (tm *ThreadManager) SendToolRuning(threadID string, agent string, content s
 }
 
 func (tm *ThreadManager) SendReasoning(threadID string, agent string, content string) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    agent,
 		Content:  content,
@@ -66,7 +66,7 @@ func (tm *ThreadManager) SendReasoning(threadID string, agent string, content st
 }
 
 func (tm *ThreadManager) SendAnswer(threadID string, agent string, content string) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    agent,
 		Content:  content,
@@ -78,7 +78,7 @@ func (tm *ThreadManager) SendAnswer(threadID string, agent string, content strin
 }
 
 func (tm *ThreadManager) SendEnd(threadID string) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    "system",
 		Content:  "end",
@@ -89,7 +89,7 @@ func (tm *ThreadManager) SendEnd(threadID string) {
 }
 
 func (tm *ThreadManager) SendError(threadID string, err error) {
-	ssEvent := SSEEvent{
+	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    "system",
 		Content:  fmt.Sprintf("执行错误: %v", err),
