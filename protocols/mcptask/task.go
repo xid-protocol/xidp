@@ -8,6 +8,7 @@ import (
 type State string
 
 const (
+	StateInit      State = "init"
 	StateCreated   State = "created"
 	StateWorking   State = "working"
 	StateCompleted State = "completed"
@@ -33,7 +34,7 @@ type Task struct {
 	Error    string `json:"error" bson:"error"`
 }
 
-func CreateTask(steps []Step) *protocols.XID {
+func InitTask() *protocols.XID {
 	taskid := common.GenerateId()
 
 	//info
@@ -41,14 +42,13 @@ func CreateTask(steps []Step) *protocols.XID {
 
 	//metadata
 	md := protocols.NewMetadata(
-		protocols.OperationCreate,
+		protocols.OperationInit,
 		"/protocols/mcptask",
 		"application/json")
 
 	//payload
 	payload := &Task{
-		Status: StateCreated,
-		Steps:  steps,
+		Status: StateInit,
 	}
 	xid := protocols.NewXID(&info, &md, payload)
 	return xid

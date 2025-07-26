@@ -16,9 +16,11 @@ const (
 type OperationType string
 
 const (
+	OperationInit   OperationType = "init"
+	OperationModify OperationType = "modify"
+	OperationDelete OperationType = "delete"
 	OperationCreate OperationType = "create"
 	OperationUpdate OperationType = "update"
-	OperationDelete OperationType = "delete"
 )
 
 type Info struct {
