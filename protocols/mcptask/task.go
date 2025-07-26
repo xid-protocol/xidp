@@ -28,7 +28,7 @@ type Step struct {
 	Targets   []string       `json:"targets" bson:"targets"` //target url
 	Params    map[string]any `json:"params" bson:"params"`   //tool params
 	Status    State          `json:"status" bson:"status"`
-	Result    string         `json:"result" bson:"result"`
+	Result    map[string]any `json:"result" bson:"result"`
 	Error     string         `json:"error" bson:"error"`
 }
 
