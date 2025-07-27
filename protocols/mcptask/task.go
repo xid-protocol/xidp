@@ -32,6 +32,16 @@ type Step struct {
 	Error     string         `json:"error" bson:"error"`
 }
 
+type StepEvent struct {
+	TaskID    string         `json:"taskId" bson:"taskId"`
+	ThreadID  string         `json:"threadId" bson:"threadId"`
+	StepID    string         `json:"stepId" bson:"stepId"`
+	StepName  string         `json:"stepName,omitempty" bson:"stepName,omitempty"`
+	MCPServer string         `json:"mcpServer" bson:"mcpServer"`
+	DataType  string         `json:"dataType" bson:"dataType"`
+	Data      map[string]any `json:"data" bson:"data"`
+}
+
 type Task struct {
 	TaskID      string   `json:"taskId" bson:"taskId"`
 	ThreadID    string   `json:"threadId,omitempty" bson:"threadId,omitempty"` //user chat thread id
