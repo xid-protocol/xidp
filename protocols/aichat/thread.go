@@ -113,16 +113,18 @@ func (tm *ThreadManager) CleanupThread(threadID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 
-	if cancel, exists := tm.cancelMap[threadID]; exists {
+	if cancel, ok := tm.cancelMap[threadID]; ok {
 		cancel()
 		delete(tm.cancelMap, threadID)
 	}
 
-	if ch, exists := tm.channels[threadID]; exists {
+	if ch, ok := tm.channels[threadID]; ok {
 		close(ch)
 		delete(tm.channels, threadID)
 	}
 
+	delete(tm.ctxMap, threadID)
+	delete(tm.ChatRequest, threadID)
 	delete(tm.status, threadID)
 }
 
