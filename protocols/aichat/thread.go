@@ -57,7 +57,7 @@ func ThreadMan() *ThreadManager {
 }
 
 // StartNewThread 开始新的thread
-func (tm *ThreadManager) StartNewThread(ctx context.Context, chatRequest ChatRequest) (chan ChatEvent, string) {
+func (tm *ThreadManager) CreateThread(ctx context.Context, chatRequest ChatRequest) (chan ChatEvent, string) {
 	threadID := uuid.NewString()
 
 	tm.mu.Lock()
