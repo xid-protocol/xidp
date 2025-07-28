@@ -57,14 +57,15 @@ func ThreadMan() *ThreadManager {
 }
 
 // StartNewThread 开始新的thread
-func (tm *ThreadManager) CreateThread(ctx context.Context, chatRequest ChatRequest) (chan ChatEvent, string) {
-	threadID := uuid.NewString()
+func (tm *ThreadManager) CreateThread(chatRequest ChatRequest) (ctx context.Context, ch chan ChatEvent, threadID string) {
+	ctx = context.Background()
+	threadID = uuid.NewString()
 
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 
 	// 创建响应通道
-	ch := make(chan ChatEvent, 50)
+	ch = make(chan ChatEvent, 50)
 	ctx, cancel := context.WithCancel(ctx)
 	// 注册thread
 	tm.channels[threadID] = ch
@@ -73,7 +74,7 @@ func (tm *ThreadManager) CreateThread(ctx context.Context, chatRequest ChatReque
 	tm.status[threadID] = "running"
 	tm.ChatRequest[threadID] = chatRequest
 
-	return ch, threadID
+	return ctx, ch, threadID
 }
 
 // CancelThread 取消指定thread
