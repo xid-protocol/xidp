@@ -65,10 +65,11 @@ func (tm *ThreadManager) CreateThread(ctx context.Context, chatRequest ChatReque
 
 	// 创建响应通道
 	ch := make(chan ChatEvent, 50)
-
+	ctx, cancel := context.WithCancel(ctx)
 	// 注册thread
 	tm.channels[threadID] = ch
 	tm.ctxMap[threadID] = ctx
+	tm.cancelMap[threadID] = cancel
 	tm.status[threadID] = "running"
 	tm.ChatRequest[threadID] = chatRequest
 
