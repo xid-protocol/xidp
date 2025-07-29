@@ -39,6 +39,7 @@ type StepEvent struct {
 	StepName  string         `json:"stepName,omitempty" bson:"stepName,omitempty"`
 	Agent     string         `json:"agent" bson:"agent"`
 	MCPServer string         `json:"mcpServer" bson:"mcpServer"`
+	ToolName  string         `json:"toolName" bson:"toolName"`
 	DataType  string         `json:"dataType" bson:"dataType"`
 	Data      map[string]any `json:"data" bson:"data"`
 }

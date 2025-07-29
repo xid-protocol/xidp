@@ -77,6 +77,20 @@ func (tm *ThreadManager) SendAnswer(threadID string, agent string, content strin
 
 }
 
+func (tm *ThreadManager) SendImage(threadID string, agent string, url string) {
+	//转为{"url":url}
+	content := fmt.Sprintf("{\"url\":%s}", url)
+	ssEvent := ChatEvent{
+		ThreadID: threadID,
+		Agent:    agent,
+		Content:  content,
+		Type:     "image",
+	}
+	// fmt.Println(ssEvent)
+	tm.SendToThread(threadID, ssEvent)
+
+}
+
 func (tm *ThreadManager) SendEnd(threadID string) {
 	ssEvent := ChatEvent{
 		ThreadID: threadID,
