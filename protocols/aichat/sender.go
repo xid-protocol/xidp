@@ -2,6 +2,7 @@ package aichat
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/colin-404/logx"
 )
@@ -77,9 +78,10 @@ func (tm *ThreadManager) SendAnswer(threadID string, agent string, content strin
 
 }
 
-func (tm *ThreadManager) SendImage(threadID string, agent string, url string) {
-	//转为{"url":url}
-	content := fmt.Sprintf("{\"url\":%s}", url)
+func (tm *ThreadManager) SendImage(threadID string, agent string, url string, description string) {
+	//转为{"url":url, "description":description}
+	content := fmt.Sprintf("{\"url\":%s, \"description\":%s}", url, description)
+	content = strings.ReplaceAll(content, "\"", "\\\"")
 	ssEvent := ChatEvent{
 		ThreadID: threadID,
 		Agent:    agent,
