@@ -46,6 +46,7 @@ type TaskSchedule struct {
 
 // TaskExecution 任务执行信息
 type TaskExecution struct {
+	ExecutionID string      `json:"executionId,omitempty" bson:"executionId,omitempty"` // 执行ID
 	Success     int8        `json:"success" bson:"success"`                             // 是否成功
 	StartedAt   *time.Time  `json:"startedAt,omitempty" bson:"startedAt,omitempty"`     // 实际开始时间
 	CompletedAt *time.Time  `json:"completedAt,omitempty" bson:"completedAt,omitempty"` // 实际完成时间

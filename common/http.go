@@ -8,7 +8,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var httpClient = resty.New().SetTimeout(10 * time.Second)
+var httpClient = resty.New().SetTimeout(5 * time.Second)
 
 func DoHttp(method, url string, body interface{}, headers map[string]string) (*resty.Response, error) {
 	req := httpClient.R()
