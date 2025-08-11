@@ -57,8 +57,6 @@ type XID struct {
 }
 
 func NewInfo(id string, xidType string) Info {
-	//id can't be empty
-	//xidType can't be empty
 	return Info{
 		ID:   id,
 		Type: xidType,
