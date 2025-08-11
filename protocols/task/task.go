@@ -98,7 +98,7 @@ type Task struct {
 	Status       TaskStatus       `json:"status" bson:"status"`                                 // 任务状态
 	Priority     TaskPriority     `json:"priority" bson:"priority"`                             // 任务优先级
 	Schedule     *TaskSchedule    `json:"schedule,omitempty" bson:"schedule,omitempty"`         // 调度信息
-	Executions   []*TaskExecution `json:"execution,omitempty" bson:"execution,omitempty"`       // 执行信息
+	Executions   []*TaskExecution `json:"executions,omitempty" bson:"executions,omitempty"`     // 执行信息
 	Result       *TaskResult      `json:"result,omitempty" bson:"result,omitempty"`             // 任务结果
 	Dependencies []TaskDependency `json:"dependencies,omitempty" bson:"dependencies,omitempty"` // 任务依赖
 	Parameters   map[string]any   `json:"parameters,omitempty" bson:"parameters,omitempty"`     // 任务参数

@@ -54,3 +54,8 @@ func CloseMongoDB() error {
 func GetCollection(collectionName string) *mongo.Collection {
 	return MongoDB.Collection(collectionName)
 }
+
+// write to mongodb collection
+func WriteToMongoDB(collectionName string, data interface{}) (*mongo.InsertOneResult, error) {
+	return MongoDB.Collection(collectionName).InsertOne(context.Background(), data)
+}
