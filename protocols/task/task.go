@@ -61,11 +61,12 @@ type TaskExecution struct {
 
 // TaskLog 任务日志
 type TaskLog struct {
-	Type      string    `json:"type" bson:"type"`                     // 日志类型
-	Timestamp time.Time `json:"timestamp" bson:"timestamp"`           // 日志时间
-	Level     string    `json:"level" bson:"level"`                   // 日志级别
-	Message   string    `json:"message" bson:"message"`               // 日志消息
-	Data      any       `json:"data,omitempty" bson:"data,omitempty"` // 附加数据
+	ExecutionID string
+	Type        string            `json:"type" bson:"type"`                     // 日志类型
+	Timestamp   int64             `json:"timestamp" bson:"timestamp"`           // 日志时间
+	Level       string            `json:"level" bson:"level"`                   // 日志级别
+	Message     map[string]string `json:"message" bson:"message"`               // 日志消息
+	Data        any               `json:"data,omitempty" bson:"data,omitempty"` // 附加数据
 }
 
 // TaskResult 任务结果
