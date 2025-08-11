@@ -9,7 +9,7 @@ import (
 	"github.com/colin-404/logx"
 	"github.com/gin-gonic/gin"
 	"github.com/xid-protocol/xidp/common"
-	"github.com/xid-protocol/xidp/db/repositories"
+	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/protocols"
 )
 
@@ -125,7 +125,7 @@ func CreateTaskHandler(c *gin.Context) {
 func CreateTask(task *Task) (*protocols.XID, error) {
 	xid := protocols.GenerateXid(task.Name)
 	//check if XID already exists
-	xidRepository := repositories.NewXidInfoRepository()
+	xidRepository := db.NewXidInfoRepository()
 	XID, err := xidRepository.FindOneByXidAndPath(context.Background(), xid, "/protocols/task")
 	//if not nil, return error
 	if XID != nil {

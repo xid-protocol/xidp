@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/tidwall/gjson"
-	"github.com/xid-protocol/xidp/db/repositories"
+	"github.com/xid-protocol/xidp/db"
 )
 
 const ExposureIprange = "0.0.0.0/0"
@@ -32,7 +32,7 @@ type AWSAttackSurface struct {
 func NewAWSAttackSurface(id string) *AWSAttackSurface {
 	var awsEas AWSAttackSurface
 	ctx := context.Background()
-	repository := repositories.NewXidInfoRepository()
+	repository := db.NewXidInfoRepository()
 	secgroupXID, err := repository.FindOneByXidAndPath(ctx, id, "/info/aws/secgroup")
 	if err != nil {
 		return nil

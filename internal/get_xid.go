@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/xid-protocol/xidp/db/repositories"
+	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/protocols"
 )
 
@@ -70,7 +70,7 @@ func GetXid(username string, source string) (*protocols.XID, error) {
 	ctx := context.Background()
 	path := "/info"
 	if source != "" {
-		xidInfoRepository := repositories.NewXidInfoRepository()
+		xidInfoRepository := db.NewXidInfoRepository()
 		path = fmt.Sprintf("/info/%s", source)
 		xid, err := xidInfoRepository.FindByName(ctx, username, path)
 		if err != nil {

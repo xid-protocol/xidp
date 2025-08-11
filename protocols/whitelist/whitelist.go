@@ -5,8 +5,7 @@ import (
 	"errors"
 
 	"github.com/colin-404/logx"
-	xid_info_repositories "github.com/xid-protocol/xidp/db/repositories"
-	protocols_repositories "github.com/xid-protocol/xidp/db/repositories/protocols_repositories"
+	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/protocols"
 )
 
@@ -26,8 +25,8 @@ type Whitelist struct {
 
 func NewWhitelist(xid string, whitelistType string, payload Whitelist) (*protocols.XID, error) {
 
-	whitelistRepository := protocols_repositories.NewWhitelistRepository()
-	xidInfoRepository := xid_info_repositories.NewXidInfoRepository()
+	whitelistRepository := db.NewXidInfoRepository()
+	xidInfoRepository := db.NewXidInfoRepository()
 	xidInfo, err := xidInfoRepository.FindByName(context.Background(), xid, "/protocols/whitelist")
 	if err != nil {
 		logx.Errorf("NewWhitelist: %v", err)

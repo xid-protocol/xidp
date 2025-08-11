@@ -65,7 +65,7 @@ func init() {
 	initLog()
 
 	// 初始化MongoDB连接
-	err := db.InitMongoDB()
+	err := db.InitMongoDB(viper.GetString("MongoDB.database"), viper.GetString("MongoDB.uri"))
 	if err != nil {
 		logx.Fatalf("Failed to initialize MongoDB: %v", err)
 	}

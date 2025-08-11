@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/colin-404/logx"
-	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,19 +14,7 @@ var (
 	MongoDB     *mongo.Database
 )
 
-// InitMongoDB 初始化MongoDB连接
-func InitMongoDB() error {
-	// 从配置文件读取MongoDB设置
-	mongoURI := viper.GetString("mongodb.uri")
-	dbName := viper.GetString("mongodb.database")
-
-	// 设置默认值
-	if mongoURI == "" {
-		mongoURI = "mongodb://localhost:27017"
-	}
-	if dbName == "" {
-		dbName = "xid_protocol"
-	}
+func InitMongoDB(dbName string, mongoURI string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -38,7 +25,7 @@ func InitMongoDB() error {
 		return err
 	}
 
-	// 测试连接
+	// test connection
 	err = client.Ping(ctx, nil)
 	if err != nil {
 		logx.Errorf("Failed to ping MongoDB: %v", err)

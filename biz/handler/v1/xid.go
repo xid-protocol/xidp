@@ -7,7 +7,7 @@ import (
 	"github.com/colin-404/logx"
 	"github.com/gin-gonic/gin"
 	"github.com/xid-protocol/xidp/common"
-	"github.com/xid-protocol/xidp/db/repositories"
+	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/internal"
 	"github.com/xid-protocol/xidp/protocols"
 )
@@ -17,7 +17,7 @@ func GetXidInfo(c *gin.Context) {
 	path := c.Param("path")
 	//如果path以info开头
 	if strings.HasPrefix(path, "info") {
-		xidInfoRepository := repositories.NewXidInfoRepository()
+		xidInfoRepository := db.NewXidInfoRepository()
 		xidInfo, err := xidInfoRepository.FindOneByXidAndPath(context.Background(), xid, path)
 		if err != nil {
 			c.JSON(200, gin.H{"error": err.Error()})
@@ -29,7 +29,7 @@ func GetXidInfo(c *gin.Context) {
 		})
 		return
 	}
-	xidInfoRepository := repositories.NewXidInfoRepository()
+	xidInfoRepository := db.NewXidInfoRepository()
 	xidInfo, err := xidInfoRepository.FindOneByXidAndPath(context.Background(), xid, path)
 	if err != nil {
 		c.JSON(200, gin.H{"error": err.Error()})

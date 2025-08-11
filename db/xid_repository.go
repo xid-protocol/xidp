@@ -1,9 +1,8 @@
-package repositories
+package db
 
 import (
 	"context"
 
-	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/protocols"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,7 +15,7 @@ type XIDRepository struct {
 func NewXIDRepository() *XIDRepository {
 
 	return &XIDRepository{
-		collection: db.GetCollection("xids"), // 你的collection
+		collection: GetCollection("xids"), // 你的collection
 	}
 }
 
