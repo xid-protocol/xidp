@@ -47,3 +47,15 @@ func (r *XIDRepository) FindByName(ctx context.Context, name string) (*protocols
 	}
 	return &xidInfo, nil
 }
+
+func (r *XIDRepository) FindOneByXid(ctx context.Context, xid string) (*protocols.XID, error) {
+	filter := bson.M{
+		"xid": xid,
+	}
+	var XID protocols.XID
+	err := r.collection.FindOne(ctx, filter).Decode(&XID)
+	if err != nil {
+		return nil, err
+	}
+	return &XID, nil
+}

@@ -37,17 +37,21 @@ func MapToMetadata(m map[string]interface{}) (protocols.Metadata, error) {
 		return md, fmt.Errorf("metadata is required")
 	}
 
-	//必须有path
-	if md.Path, ok = m["path"].(string); !ok {
+	// 必须有 path
+	if md.Path, ok = m["path"].(string); !ok || md.Path == "" {
 		return md, fmt.Errorf("metadata.path is required")
 	}
-	//必须有operation
-	if md.Operation, ok = m["operation"].(protocols.OperationType); !ok {
+
+	// 必须有 operation (string → OperationType)
+	opStr, ok := m["operation"].(string)
+	if !ok || opStr == "" {
 		return md, fmt.Errorf("metadata.operation is required")
 	}
-	//必须有contentType
-	if md.ContentType, ok = m["contentType"].(string); !ok {
-		return md, fmt.Errorf("metadata.contentType is required")
+	md.Operation = protocols.OperationType(opStr)
+
+	// 如果contentType为空，则设置为application/json
+	if md.ContentType, ok = m["contentType"].(string); !ok || md.ContentType == "" {
+		md.ContentType = "application/json"
 	}
 
 	if m["encryption"] != nil {

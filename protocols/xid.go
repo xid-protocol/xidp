@@ -24,8 +24,9 @@ const (
 )
 
 type Info struct {
-	ID   string `json:"id" bson:"id"`
-	Type string `json:"type" bson:"type"`
+	ID    string         `json:"id" bson:"id"`
+	Type  string         `json:"type" bson:"type"`
+	Extra map[string]any `json:"extra,omitempty" bson:"extra,omitempty"`
 }
 
 type Encryption struct {

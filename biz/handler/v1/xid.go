@@ -4,7 +4,9 @@ import (
 	"context"
 	"strings"
 
+	"github.com/colin-404/logx"
 	"github.com/gin-gonic/gin"
+	"github.com/xid-protocol/xidp/common"
 	"github.com/xid-protocol/xidp/db/repositories"
 	"github.com/xid-protocol/xidp/internal"
 	"github.com/xid-protocol/xidp/protocols"
@@ -88,8 +90,8 @@ func Getxid(c *gin.Context) {
 
 //传入的参数示例
 // {
-// 	"id": "1234567890",
 // 	"info": {
+// 		"id": "1234567890",
 // 		"type": "email",
 // 		"encryption": false
 // 	},
@@ -111,13 +113,14 @@ func CreateXID(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid JSON: " + err.Error()})
 		return
 	}
+	logx.Infof("req: %v", req)
 
 	// 验证并获取必需的 plainID 字段
-	ID, ok := req["id"].(string)
-	if !ok || ID == "" {
-		c.JSON(400, gin.H{"error": "ID is required and must be a non-empty string"})
-		return
-	}
+	// ID, ok := req["id"].(string)
+	// if !ok || ID == "" {
+	// 	c.JSON(400, gin.H{"error": "ID is required and must be a non-empty string"})
+	// 	return
+	// }
 
 	// 验证并获取 info
 	info, err := internal.ConvertXIDInfo(req["info"].(map[string]interface{}))
@@ -143,28 +146,23 @@ func CreateXID(c *gin.Context) {
 
 	XID := protocols.NewXID(&info, &meta, payload)
 
+	c.JSON(200, gin.H{"XID": XID})
+}
+
+func CreateSHA1(c *gin.Context) {
+	//获取body里的text参数，json格式
+
+	var req map[string]interface{}
+	err := c.BindJSON(&req)
 	if err != nil {
 		c.JSON(200, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"xid": XID})
+	text := common.GenerateSHA1(req["text"].(string))
+
+	c.JSON(200, gin.H{
+		"sha1": text,
+		"text": req["text"].(string),
+	})
 }
-
-// func CreateXidId(c *gin.Context) {
-// 	//获取body里的text参数，json格式
-
-// 	var req map[string]interface{}
-// 	err := c.BindJSON(&req)
-// 	if err != nil {
-// 		c.JSON(200, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	id := common.GenerateId(req["text"].(string))
-
-// 	c.JSON(200, gin.H{
-// 		"xid":  id,
-// 		"text": req["text"].(string),
-// 	})
-// }

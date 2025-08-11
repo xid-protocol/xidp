@@ -3,6 +3,7 @@ package biz
 import (
 	"github.com/gin-gonic/gin"
 	v1 "github.com/xid-protocol/xidp/biz/handler/v1"
+	"github.com/xid-protocol/xidp/protocols/task"
 )
 
 func RegisterRouter(r *gin.Engine) {
@@ -18,6 +19,10 @@ func RegisterRouter(r *gin.Engine) {
 			xidGroup.GET("/:xid/info/*path", v1.GetXidInfo)
 
 		}
+		//sha1
+		apiv1Group.POST("/sha1", v1.CreateSHA1)
+
+		//notify
 		notifyGroup := apiv1Group.Group("/notify")
 		{
 			notifyGroup.POST("/lark", func(c *gin.Context) {
@@ -30,11 +35,10 @@ func RegisterRouter(r *gin.Engine) {
 		{
 			attackSurface := protocolGroup.Group("/attack-surface")
 			attackSurface.GET("/list", v1.GetAttackSurface)
-			// attackSurface.POST("/aws/", v1.CreateAttackSurface)
 
-			// externalAttackSurface.POST("/create", v1.CreateExternalAttackSurface)
-			// externalAttackSurface.POST("/update", v1.UpdateExternalAttackSurface)
-			// externalAttackSurface.POST("/delete", v1.DeleteExternalAttackSurface)
+			//task protocols
+			taskGroup := protocolGroup.Group("/task")
+			taskGroup.POST("/create", task.CreateTaskHandler)
 
 		}
 		whitelistGroup := protocolGroup.Group("/whitelist")

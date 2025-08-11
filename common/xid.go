@@ -1,8 +1,6 @@
 package common
 
 import (
-	"strings"
-
 	"github.com/google/uuid"
 	uxid "github.com/rs/xid"
 )
@@ -10,8 +8,8 @@ import (
 // 传入明文生成XID
 func GenerateXid(name string) string {
 	xidNS := uuid.NewSHA1(uuid.NameSpaceURL, []byte("xid-protocol"))
-	normalized := strings.ToLower(strings.TrimSpace(name))
-	xid := uuid.NewSHA1(xidNS, []byte(normalized))
+	// normalized := strings.ToLower(strings.TrimSpace(name))
+	xid := uuid.NewSHA1(xidNS, []byte(name))
 	return xid.String()
 }
 
@@ -25,4 +23,10 @@ func GenerateCardId() string {
 func GenerateId() string {
 	uxid := uxid.New()
 	return uxid.String()
+}
+
+func GenerateSHA1(text string) string {
+	xidNS := uuid.NewSHA1(uuid.NameSpaceURL, []byte(text))
+	xid := uuid.NewSHA1(xidNS, []byte(text))
+	return xid.String()
 }
