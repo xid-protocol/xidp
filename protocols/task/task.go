@@ -3,11 +3,9 @@ package task
 import (
 	"context"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/colin-404/logx"
-	"github.com/gin-gonic/gin"
 	"github.com/xid-protocol/xidp/common"
 	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/protocols"
@@ -106,23 +104,10 @@ type Task struct {
 	UpdatedAt    int64            `json:"updatedAt" bson:"updatedAt"`                           // 更新时间
 }
 
-func CreateTaskHandler(c *gin.Context) {
-	task := &Task{}
-	c.ShouldBindJSON(task)
-	task.CreatedAt = common.GetTimestamp()
-	task.UpdatedAt = common.GetTimestamp()
-
-	XID, err := CreateTask(task)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"XID": XID})
-}
-
 // NewTask
 func CreateTask(task *Task) (*protocols.XID, error) {
+	task.CreatedAt = common.GetTimestamp()
+	task.UpdatedAt = common.GetTimestamp()
 	xid := protocols.GenerateXid(task.Name)
 	//check if XID already exists
 	xidRepository := db.NewXidInfoRepository()
