@@ -46,11 +46,13 @@ type TaskSchedule struct {
 
 // TaskExecution 任务执行信息
 type TaskExecution struct {
+	Success     int8        `json:"success" bson:"success"`                             // 是否成功
 	StartedAt   *time.Time  `json:"startedAt,omitempty" bson:"startedAt,omitempty"`     // 实际开始时间
 	CompletedAt *time.Time  `json:"completedAt,omitempty" bson:"completedAt,omitempty"` // 实际完成时间
 	Duration    int64       `json:"duration,omitempty" bson:"duration,omitempty"`       // 执行时长（秒）
 	RetryCount  int         `json:"retryCount,omitempty" bson:"retryCount,omitempty"`   // 已重试次数
 	WorkerID    string      `json:"workerId,omitempty" bson:"workerId,omitempty"`       // 执行者ID
+	WorkerName  string      `json:"workerName,omitempty" bson:"workerName,omitempty"`   // 执行者名称
 	Logs        []TaskLog   `json:"logs,omitempty" bson:"logs,omitempty"`               // 执行日志
 	Result      *TaskResult `json:"result,omitempty" bson:"result,omitempty"`           // 执行结果
 	Error       *TaskError  `json:"error,omitempty" bson:"error,omitempty"`             // 错误信息
@@ -58,6 +60,7 @@ type TaskExecution struct {
 
 // TaskLog 任务日志
 type TaskLog struct {
+	Type      string    `json:"type" bson:"type"`                     // 日志类型
 	Timestamp time.Time `json:"timestamp" bson:"timestamp"`           // 日志时间
 	Level     string    `json:"level" bson:"level"`                   // 日志级别
 	Message   string    `json:"message" bson:"message"`               // 日志消息
@@ -66,7 +69,7 @@ type TaskLog struct {
 
 // TaskResult 任务结果
 type TaskResult struct {
-	Success bool           `json:"success" bson:"success"`                     // 是否成功
+	Success int8           `json:"success" bson:"success"`                     // 是否成功
 	Data    any            `json:"data,omitempty" bson:"data,omitempty"`       // 结果数据
 	Summary string         `json:"summary,omitempty" bson:"summary,omitempty"` // 结果摘要
 	Metrics map[string]any `json:"metrics,omitempty" bson:"metrics,omitempty"` // 执行指标
@@ -94,7 +97,8 @@ type Task struct {
 	Status       TaskStatus       `json:"status" bson:"status"`                                 // 任务状态
 	Priority     TaskPriority     `json:"priority" bson:"priority"`                             // 任务优先级
 	Schedule     *TaskSchedule    `json:"schedule,omitempty" bson:"schedule,omitempty"`         // 调度信息
-	Execution    *TaskExecution   `json:"execution,omitempty" bson:"execution,omitempty"`       // 执行信息
+	Executions   []*TaskExecution `json:"execution,omitempty" bson:"execution,omitempty"`       // 执行信息
+	Result       *TaskResult      `json:"result,omitempty" bson:"result,omitempty"`             // 任务结果
 	Dependencies []TaskDependency `json:"dependencies,omitempty" bson:"dependencies,omitempty"` // 任务依赖
 	Parameters   map[string]any   `json:"parameters,omitempty" bson:"parameters,omitempty"`     // 任务参数
 	Tags         []string         `json:"tags,omitempty" bson:"tags,omitempty"`                 // 任务标签
