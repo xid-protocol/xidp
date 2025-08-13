@@ -120,7 +120,7 @@ const (
 	StepStatusTimeout   StepStatus = "timeout"   // 超时
 )
 
-type Step struct {
+type TaskStep struct {
 	StepID     string         `json:"stepId" bson:"stepId"`
 	StepName   string         `json:"stepName,omitempty" bson:"stepName,omitempty"`
 	WorkerID   string         `json:"workerId" bson:"workerId"`
@@ -149,7 +149,7 @@ type Task struct {
 	Targets     []string   `json:"targets,omitempty" bson:"targets,omitempty"` //target url
 	History     []string   `json:"history" bson:"history"`                     //user input history
 	Status      TaskStatus `json:"status" bson:"status"`
-	Steps       []Step     `json:"steps" bson:"steps"`
+	Steps       []TaskStep `json:"steps" bson:"steps"`
 	Result      string     `json:"result" bson:"result"`
 	Error       string     `json:"error" bson:"error"`
 	CreatedAt   int64      `json:"createdAt" bson:"createdAt"`
