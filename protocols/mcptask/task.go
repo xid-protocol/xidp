@@ -1,4 +1,4 @@
-package task
+package mcptask
 
 import (
 	"context"
@@ -22,16 +22,6 @@ const (
 	StatusCancelled Status = "cancelled" // 已取消
 	StatusTimeout   Status = "timeout"   // 超时
 )
-
-// user http request body
-type ChatRequest struct {
-	ProjectName string `json:"projectName"`
-	TaskID      string `json:"taskID"`
-	MessageID   string `json:"messageID"`
-	ThreadID    string `json:"threadID"`
-	Content     string `json:"content"`
-	Type        string `json:"type"`
-}
 
 // TaskPriority 任务优先级枚举
 // type TaskPriority int
