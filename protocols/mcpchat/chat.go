@@ -1,4 +1,4 @@
-package chat
+package mcpchat
 
 // user http request body
 type ChatRequest struct {
