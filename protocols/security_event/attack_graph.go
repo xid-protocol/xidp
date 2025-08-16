@@ -18,7 +18,7 @@ const (
 	AttackStatusFailed    AttackStatus = "failed"
 	AttackStatusCancelled AttackStatus = "cancelled"
 	AttackStatusTimeout   AttackStatus = "timeout"
-	AttackStatusSuccess   AttackStatus = "success"
+	AttackStatusSucceeded AttackStatus = "succeeded"
 )
 
 type AttackEvent struct {
