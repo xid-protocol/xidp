@@ -24,6 +24,7 @@ const (
 type AttackEvent struct {
 	AttackID   string       `json:"attack_id" bson:"attackID"`
 	AttackName string       `json:"attack_name" bson:"attackName"`
+	ParentID   string       `json:"parent_id" bson:"parentID"`
 	Targets    string       `json:"targets" bson:"targets"`
 	Status     AttackStatus `json:"status" bson:"status"`
 }
