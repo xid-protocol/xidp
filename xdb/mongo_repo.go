@@ -69,7 +69,7 @@ func (r *mongoXIDRepo) InsertIdempotent(ctx context.Context, doc *protocols.XID,
 
 func (r *mongoXIDRepo) Upsert(ctx context.Context, doc *protocols.XID) error {
 	filter := bson.M{"xid": doc.Xid, "metadata.path": doc.Metadata.Path}
-	update := bson.M{"$set": doc, "$setOnInsert": bson.M{"metadata.createdAt": time.Now().UnixMilli()}}
+	update := bson.M{"$set": doc}
 	_, err := r.collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 	return err
 }
@@ -86,6 +86,8 @@ func (r *mongoXIDRepo) UpdateFields(ctx context.Context, xid, path string, field
 	_, err := r.collection.UpdateOne(ctx, filter, update)
 	return err
 }
+
+// modify
 
 func (r *mongoXIDRepo) DeleteSoft(ctx context.Context, xid, path string, deletedAt int64) error {
 	filter := bson.M{"xid": xid, "metadata.path": path}

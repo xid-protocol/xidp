@@ -72,14 +72,13 @@ func (c *Client) Create(ctx context.Context, path string, doc *protocols.XID, id
 }
 
 // Upsert creates or updates the document identified by (xid, path).
-func (c *Client) Upsert(ctx context.Context, path string, doc *protocols.XID) error {
+func (c *Client) Upsert(ctx context.Context, doc *protocols.XID) error {
 	ctx, cancel := c.withTimeout(ctx)
 	defer cancel()
 
 	if doc == nil || doc.Metadata == nil {
 		return ErrInvalidArgument
 	}
-	doc.Metadata.Path = path
 	return c.repo.Upsert(ctx, doc)
 }
 
