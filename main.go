@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/xid-protocol/xidp/biz"
-	"github.com/xid-protocol/xidp/db"
 )
 
 var sig = make(chan os.Signal, 1)
@@ -64,20 +63,9 @@ func init() {
 
 	initLog()
 
-	// 初始化MongoDB连接
-	err := db.InitMongoDB(viper.GetString("MongoDB.database"), viper.GetString("MongoDB.uri"))
-	if err != nil {
-		logx.Fatalf("Failed to initialize MongoDB: %v", err)
-	}
 }
 
 func main() {
-	defer func() {
-		// 关闭数据库连接
-		if err := db.CloseMongoDB(); err != nil {
-			logx.Errorf("Failed to close MongoDB connection: %v", err)
-		}
-	}()
 
 	go ServerStart()
 	//go sealsuite.SealsuiteAcountInit()

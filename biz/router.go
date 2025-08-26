@@ -36,9 +36,9 @@ func RegisterRouter(r *gin.Engine) {
 			attackSurface.GET("/list", v1.GetAttackSurface)
 
 		}
-		whitelistGroup := protocolGroup.Group("/whitelist")
-		{
-			whitelistGroup.POST("/create", v1.CreateWhitelist)
-		}
+		// whitelistGroup := protocolGroup.Group("/whitelist")
+		// {
+		// 	whitelistGroup.POST("/create", v1.CreateWhitelist)
+		// }
 	}
 }

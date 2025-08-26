@@ -4,7 +4,7 @@ import (
 	"github.com/colin-404/logx"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"github.com/xid-protocol/xidp/common"
+	"github.com/xid-protocol/common"
 )
 
 // Lark消息结构

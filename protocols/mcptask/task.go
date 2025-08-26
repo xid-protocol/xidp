@@ -1,15 +1,5 @@
 package mcptask
 
-import (
-	"context"
-	"errors"
-
-	"github.com/colin-404/logx"
-	"github.com/xid-protocol/xidp/common"
-	"github.com/xid-protocol/xidp/db"
-	"github.com/xid-protocol/xidp/protocols"
-)
-
 // TaskStatus 任务状态枚举
 type Status string
 
@@ -70,35 +60,35 @@ type Task struct {
 }
 
 // NewTask
-func CreateTask(task *Task) (*protocols.XID, error) {
-	task.CreatedAt = common.GetTimestamp()
-	task.UpdatedAt = common.GetTimestamp()
-	xid := protocols.GenerateXid(task.Name)
-	//check if XID already exists
-	xidRepository := db.NewXidInfoRepository()
-	XID, err := xidRepository.FindOneByXidAndPath(context.Background(), xid, "/protocols/task")
-	//if not nil, return error
-	if XID != nil {
-		return nil, errors.New("xid already exists")
-	}
-	if err != nil {
-		logx.Errorf("CreateTask Error: %v", err)
-		return nil, err
-	}
+// func CreateTask(task *Task) (*protocols.XID, error) {
+// 	task.CreatedAt = common.GetTimestamp()
+// 	task.UpdatedAt = common.GetTimestamp()
+// 	xid := protocols.GenerateXid(task.Name)
+// 	//check if XID already exists
+// 	xidRepository := xdb.NewXIDRepository()
+// 	XID, err := xidRepository.FindOneByXidAndPath(context.Background(), xid, "/protocols/task")
+// 	//if not nil, return error
+// 	if XID != nil {
+// 		return nil, errors.New("xid already exists")
+// 	}
+// 	if err != nil {
+// 		logx.Errorf("CreateTask Error: %v", err)
+// 		return nil, err
+// 	}
 
-	info := protocols.NewInfo(task.Name, "taskName")
-	info.Extra = map[string]any{
-		"description": task.Description,
-	}
-	metadata := protocols.NewMetadata(protocols.OperationInit, "/protocols/task", "application/json")
+// 	info := protocols.NewInfo(task.Name, "taskName")
+// 	info.Extra = map[string]any{
+// 		"description": task.Description,
+// 	}
+// 	metadata := protocols.NewMetadata(protocols.OperationInit, "/protocols/task", "application/json")
 
-	//create task
-	payload := &Task{
-		TaskType: task.TaskType,
-		Status:   StatusInit,
-	}
+// 	//create task
+// 	payload := &Task{
+// 		TaskType: task.TaskType,
+// 		Status:   StatusInit,
+// 	}
 
-	XID = protocols.NewXID(&info, &metadata, payload)
+// 	XID = protocols.NewXID(&info, &metadata, payload)
 
-	return XID, nil
-}
+// 	return XID, nil
+// }

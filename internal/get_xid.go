@@ -1,11 +1,9 @@
 package internal
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
-	"github.com/xid-protocol/xidp/db"
 	"github.com/xid-protocol/xidp/protocols"
 )
 
@@ -67,17 +65,17 @@ func MapToMetadata(m map[string]interface{}) (protocols.Metadata, error) {
 }
 
 func GetXid(username string, source string) (*protocols.XID, error) {
-	ctx := context.Background()
-	path := "/info"
-	if source != "" {
-		xidInfoRepository := db.NewXidInfoRepository()
-		path = fmt.Sprintf("/info/%s", source)
-		xid, err := xidInfoRepository.FindByName(ctx, username, path)
-		if err != nil {
-			return nil, err
-		}
-		return xid, nil
-	}
+	// ctx := context.Background()
+	// path := "/info"
+	// if source != "" {
+	// 	xidInfoRepository := xdb.NewXidInfoRepository()
+	// 	path = fmt.Sprintf("/info/%s", source)
+	// 	xid, err := xidInfoRepository.FindByName(ctx, username, path)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	return xid, nil
+	// }
 
 	// if path == "/info" {
 	// 	xidRepository := repository.NewXIDRepository()

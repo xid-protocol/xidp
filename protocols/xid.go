@@ -6,7 +6,7 @@ import (
 
 	"github.com/colin-404/logx"
 	"github.com/google/uuid"
-	"github.com/xid-protocol/xidp/common"
+	"github.com/xid-protocol/common"
 )
 
 const (
@@ -24,9 +24,11 @@ const (
 )
 
 type Info struct {
-	ID    string         `json:"id" bson:"id"`
-	Type  string         `json:"type" bson:"type"`
-	Extra map[string]any `json:"extra,omitempty" bson:"extra,omitempty"`
+	ID    string   `json:"id" bson:"id"`
+	Type  string   `json:"type" bson:"type"`
+	Desc  string   `json:"desc,omitempty" bson:"desc,omitempty"`
+	Tags  []string `json:"tags,omitempty" bson:"tags,omitempty"`
+	Extra any      `json:"extra,omitempty" bson:"extra,omitempty"`
 }
 
 type Encryption struct {
@@ -66,7 +68,7 @@ func NewInfo(id string, xidType string) Info {
 func NewMetadata(operation OperationType, path string, contentType string) Metadata {
 	return Metadata{
 		CreatedAt:   common.GetTimestamp(),
-		CardId:      common.GenerateCardId(),
+		CardId:      common.GenerateID(),
 		Operation:   operation,
 		Path:        path,
 		ContentType: contentType,
