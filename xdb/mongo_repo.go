@@ -18,7 +18,7 @@ func NewMongoXIDRepo(c *mongo.Collection) XIDRepo {
 	return &mongoXIDRepo{collection: c}
 }
 
-func (r *mongoXIDRepo) List(ctx context.Context, q Query) ([]*protocols.XID, string, error) {
+func (r *mongoXIDRepo) List(ctx context.Context, q Query) ([]*protocols.XID[any], string, error) {
 	return nil, "", nil
 }
 
@@ -42,7 +42,7 @@ func (r *mongoXIDRepo) Exists(ctx context.Context, xid, path string) (bool, erro
 	return err == nil, err
 }
 
-func (r *mongoXIDRepo) Insert(ctx context.Context, doc *protocols.XID) error {
+func (r *mongoXIDRepo) Insert(ctx context.Context, doc *protocols.XID[any]) error {
 	if doc.Metadata != nil && doc.Metadata.CreatedAt == 0 {
 		doc.Metadata.CreatedAt = time.Now().UnixMilli()
 	}
@@ -50,7 +50,7 @@ func (r *mongoXIDRepo) Insert(ctx context.Context, doc *protocols.XID) error {
 	return err
 }
 
-func (r *mongoXIDRepo) InsertIdempotent(ctx context.Context, doc *protocols.XID, idempotencyKey string) error {
+func (r *mongoXIDRepo) InsertIdempotent(ctx context.Context, doc *protocols.XID[any], idempotencyKey string) error {
 	if doc.Metadata != nil && doc.Metadata.CreatedAt == 0 {
 		doc.Metadata.CreatedAt = time.Now().UnixMilli()
 	}
@@ -71,14 +71,14 @@ func (r *mongoXIDRepo) InsertIdempotent(ctx context.Context, doc *protocols.XID,
 	return err
 }
 
-func (r *mongoXIDRepo) Upsert(ctx context.Context, doc *protocols.XID) error {
+func (r *mongoXIDRepo) Upsert(ctx context.Context, doc *protocols.XID[any]) error {
 	filter := bson.M{"xid": doc.Xid, "metadata.path": doc.Metadata.Path}
 	update := bson.M{"$set": doc}
 	_, err := r.collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 	return err
 }
 
-func (r *mongoXIDRepo) Replace(ctx context.Context, xid, path string, doc *protocols.XID) error {
+func (r *mongoXIDRepo) Replace(ctx context.Context, xid, path string, doc *protocols.XID[any]) error {
 	filter := bson.M{"xid": xid, "metadata.path": path}
 	_, err := r.collection.ReplaceOne(ctx, filter, doc)
 	return err
@@ -106,9 +106,9 @@ func (r *mongoXIDRepo) DeleteHard(ctx context.Context, xid, path string) error {
 	return err
 }
 
-func (r *mongoXIDRepo) FindByXid(ctx context.Context, xid, path string) (*protocols.XID, error) {
+func (r *mongoXIDRepo) FindByXid(ctx context.Context, xid, path string) (*protocols.XID[any], error) {
 	filter := bson.M{"xid": xid, "metadata.path": path, "deletedAt": bson.M{"$exists": false}}
-	var out protocols.XID
+	var out protocols.XID[any]
 	if err := r.collection.FindOne(ctx, filter).Decode(&out); err != nil {
 		return nil, err
 	}

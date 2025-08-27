@@ -64,7 +64,7 @@ func MapToMetadata(m map[string]interface{}) (protocols.Metadata, error) {
 	return md, nil
 }
 
-func GetXid(username string, source string) (*protocols.XID, error) {
+func GetXid(username string, source string) (*protocols.XID[any], error) {
 	// ctx := context.Background()
 	// path := "/info"
 	// if source != "" {

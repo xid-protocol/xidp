@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/colin-404/logx"
 	"github.com/google/uuid"
 	"github.com/xid-protocol/common"
 )
 
 const (
-	XIDVersion = "0.1.5"
+	XIDVersion = "0.2.0"
 )
 
 type OperationType string
@@ -49,14 +48,23 @@ type Metadata struct {
 	Extra map[string]any `json:"extra,omitempty" bson:"extra,omitempty"`
 }
 
-type XID struct {
-	Name     string      `json:"name" bson:"name"`
-	Xid      string      `json:"xid" bson:"xid"`
-	Info     *Info       `json:"info" bson:"info"`
-	Version  string      `json:"version" bson:"version"`
-	Metadata *Metadata   `json:"metadata" bson:"metadata"`
-	Payload  interface{} `json:"payload" bson:"payload"`
+type XID[T any] struct {
+	Name     string    `json:"name"    bson:"name"`
+	Xid      string    `json:"xid"     bson:"xid"`
+	Info     *Info     `json:"info"    bson:"info"`
+	Version  string    `json:"version" bson:"version"`
+	Metadata *Metadata `json:"metadata" bson:"metadata"`
+	Payload  T         `json:"payload" bson:"payload"`
 }
+
+// type XID struct {
+// 	Name     string      `json:"name" bson:"name"`
+// 	Xid      string      `json:"xid" bson:"xid"`
+// 	Info     *Info       `json:"info" bson:"info"`
+// 	Version  string      `json:"version" bson:"version"`
+// 	Metadata *Metadata   `json:"metadata" bson:"metadata"`
+// 	Payload  interface{} `json:"payload" bson:"payload"`
+// }
 
 func NewInfo(id string, xidType string) Info {
 	return Info{
@@ -75,23 +83,34 @@ func NewMetadata(operation OperationType, path string, contentType string) Metad
 	}
 }
 
-func NewXID(info *Info, metadata *Metadata, payload interface{}) *XID {
-
-	//如果加密key不为空，
-	if metadata.Encryption != nil {
-		logx.Infof("encryption: %v", metadata.Encryption)
-	}
-
-	newXID := XID{
+func NewXID[T any](info *Info, meta *Metadata, payload T) *XID[T] {
+	return &XID[T]{
 		Name:     "xid-protocol",
 		Xid:      GenerateXid(info.ID),
 		Info:     info,
 		Version:  XIDVersion,
-		Metadata: metadata,
+		Metadata: meta,
 		Payload:  payload,
 	}
-	return &newXID
 }
+
+// func NewXID(info *Info, metadata *Metadata, payload interface{}) *XID {
+
+// 	//如果加密key不为空，
+// 	if metadata.Encryption != nil {
+// 		logx.Infof("encryption: %v", metadata.Encryption)
+// 	}
+
+// 	newXID := XID{
+// 		Name:     "xid-protocol",
+// 		Xid:      GenerateXid(info.ID),
+// 		Info:     info,
+// 		Version:  XIDVersion,
+// 		Metadata: metadata,
+// 		Payload:  payload,
+// 	}
+// 	return &newXID
+// }
 
 // 传入明文，生成xid
 func GenerateXid(id string) string {

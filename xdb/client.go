@@ -62,7 +62,7 @@ func (c *Client) withTimeout(ctx context.Context) (context.Context, context.Canc
 
 // Create inserts a new XID document. When EnableIdempotency=true and an idempotencyKey is provided,
 // the implementation should guarantee at-most-once creation under the same key within a path.
-func (c *Client) Create(ctx context.Context, path string, doc *protocols.XID, idempotencyKey ...string) error {
+func (c *Client) Create(ctx context.Context, path string, doc *protocols.XID[any], idempotencyKey ...string) error {
 	ctx, cancel := c.withTimeout(ctx)
 	defer cancel()
 
@@ -77,7 +77,7 @@ func (c *Client) Create(ctx context.Context, path string, doc *protocols.XID, id
 }
 
 // Upsert creates or updates the document identified by (xid, path).
-func (c *Client) Upsert(ctx context.Context, doc *protocols.XID) error {
+func (c *Client) Upsert(ctx context.Context, doc *protocols.XID[any]) error {
 	ctx, cancel := c.withTimeout(ctx)
 	defer cancel()
 
@@ -87,7 +87,7 @@ func (c *Client) Upsert(ctx context.Context, doc *protocols.XID) error {
 	return c.repo.Upsert(ctx, doc)
 }
 
-func (c *Client) GetByXid(ctx context.Context, path, xid string) (*protocols.XID, error) {
+func (c *Client) GetByXid(ctx context.Context, path, xid string) (*protocols.XID[any], error) {
 	ctx, cancel := c.withTimeout(ctx)
 	defer cancel()
 
@@ -102,7 +102,7 @@ func (c *Client) GetByXid(ctx context.Context, path, xid string) (*protocols.XID
 }
 
 // UpdateReplace replaces the full document identified by (xid, path).
-func (c *Client) UpdateReplace(ctx context.Context, path, xid string, doc *protocols.XID) error {
+func (c *Client) UpdateReplace(ctx context.Context, path, xid string, doc *protocols.XID[any]) error {
 	ctx, cancel := c.withTimeout(ctx)
 	defer cancel()
 
@@ -161,7 +161,7 @@ type Query struct {
 	Projection   []string
 }
 
-func (c *Client) List(ctx context.Context, q Query) ([]*protocols.XID, string, error) {
+func (c *Client) List(ctx context.Context, q Query) ([]*protocols.XID[any], string, error) {
 	ctx, cancel := c.withTimeout(ctx)
 	defer cancel()
 
@@ -272,13 +272,13 @@ func (c *Client) List(ctx context.Context, q Query) ([]*protocols.XID, string, e
 	defer cur.Close(ctx)
 
 	type docWithMeta struct {
-		ID            primitive.ObjectID `bson:"_id"`
-		CT            int64              `bson:"metadata.createdAt"`
-		protocols.XID `bson:",inline"`
+		ID                 primitive.ObjectID `bson:"_id"`
+		CT                 int64              `bson:"metadata.createdAt"`
+		protocols.XID[any] `bson:",inline"`
 	}
 
 	var (
-		out           []*protocols.XID
+		out           []*protocols.XID[any]
 		lastID        primitive.ObjectID
 		lastCreatedAt int64
 	)
