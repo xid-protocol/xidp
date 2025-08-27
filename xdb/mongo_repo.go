@@ -71,8 +71,8 @@ func (r *mongoXIDRepo) InsertIdempotent(ctx context.Context, doc *protocols.XID[
 	return err
 }
 
-func (r *mongoXIDRepo) Upsert(ctx context.Context, doc *protocols.XID[any]) error {
-	filter := bson.M{"xid": doc.Xid, "metadata.path": doc.Metadata.Path}
+func (r *mongoXIDRepo) Upsert(ctx context.Context, xid, path string, doc any) error {
+	filter := bson.M{"xid": xid, "metadata.path": path}
 	update := bson.M{"$set": doc}
 	_, err := r.collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 	return err
