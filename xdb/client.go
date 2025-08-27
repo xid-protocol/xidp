@@ -3,9 +3,12 @@ package xdb
 import (
 	"context"
 	"errors"
+	"regexp"
 	"time"
 
 	"github.com/xid-protocol/xidp/protocols"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -157,9 +160,211 @@ type Query struct {
 }
 
 func (c *Client) List(ctx context.Context, q Query) ([]*protocols.XID, string, error) {
-	return nil, "", ErrNotImplemented
+	ctx, cancel := c.withTimeout(ctx)
+	defer cancel()
+
+	// Only implemented for Mongo-backed repos for now
+	mr, ok := c.repo.(*mongoXIDRepo)
+	if !ok {
+		return nil, "", ErrNotImplemented
+	}
+
+	// Build match filter
+	match := bson.M{"deletedAt": bson.M{"$exists": false}}
+	if q.Path != "" {
+		match["metadata.path"] = q.Path
+	}
+	if q.NameEquals != nil {
+		match["name"] = *q.NameEquals
+	}
+	if q.NamePrefix != nil {
+		prefix := "^" + regexp.QuoteMeta(*q.NamePrefix)
+		match["name"] = bson.M{"$regex": prefix}
+	}
+	if len(q.TagsAll) > 0 {
+		match["info.tags"] = bson.M{"$all": q.TagsAll}
+	}
+	if q.CreatedAtGTE != nil || q.CreatedAtLT != nil {
+		rangeCond := bson.M{}
+		if q.CreatedAtGTE != nil {
+			rangeCond["$gte"] = q.CreatedAtGTE.UnixMilli()
+		}
+		if q.CreatedAtLT != nil {
+			rangeCond["$lt"] = q.CreatedAtLT.UnixMilli()
+		}
+		match["metadata.createdAt"] = rangeCond
+	}
+	if len(q.AttributesEq) > 0 {
+		for k, v := range q.AttributesEq {
+			match["metadata.extra."+k] = v
+		}
+	}
+
+	// Page size guardrails
+	pageSize := q.PageSize
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	// Final sort selection
+	sortField := "metadata.createdAt"
+	switch q.SortBy {
+	case "name":
+		sortField = "name"
+	case "_id":
+		sortField = "_id"
+	case "createdAt":
+		sortField = "metadata.createdAt"
+	}
+	sortOrder := 1
+	if !q.SortAsc {
+		sortOrder = -1
+	}
+
+	// Build aggregation pipeline to get latest doc per xid
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: match}},
+		// Ensure newest first so $first in group is the latest per xid
+		bson.D{{Key: "$sort", Value: bson.D{{Key: "metadata.createdAt", Value: -1}, {Key: "_id", Value: -1}}}},
+		bson.D{{Key: "$group", Value: bson.D{
+			{Key: "_id", Value: "$xid"},
+			{Key: "doc", Value: bson.D{{Key: "$first", Value: "$$ROOT"}}},
+		}}},
+		bson.D{{Key: "$replaceRoot", Value: bson.D{{Key: "newRoot", Value: "$doc"}}}},
+	}
+
+	// After-cursor on _id (applied after grouping)
+	if q.AfterCursor != nil && *q.AfterCursor != "" {
+		if oid, err := primitive.ObjectIDFromHex(*q.AfterCursor); err == nil {
+			cmp := "$gt"
+			if !q.SortAsc {
+				cmp = "$lt"
+			}
+			pipeline = append(pipeline, bson.D{{Key: "$match", Value: bson.M{"_id": bson.M{cmp: oid}}}})
+		}
+	}
+
+	// Sort and limit on the latest-per-xid set
+	pipeline = append(pipeline, bson.D{{Key: "$sort", Value: bson.D{{Key: sortField, Value: sortOrder}, {Key: "_id", Value: sortOrder}}}})
+	pipeline = append(pipeline, bson.D{{Key: "$limit", Value: pageSize}})
+
+	// Projection if provided
+	if len(q.Projection) > 0 {
+		proj := bson.M{"_id": 1}
+		for _, f := range q.Projection {
+			proj[f] = 1
+		}
+		pipeline = append(pipeline, bson.D{{Key: "$project", Value: proj}})
+	}
+
+	cur, err := mr.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, "", err
+	}
+	defer cur.Close(ctx)
+
+	type aggXIDDoc struct {
+		ID            primitive.ObjectID `bson:"_id"`
+		protocols.XID `bson:",inline"`
+	}
+
+	var (
+		out      []*protocols.XID
+		lastID   primitive.ObjectID
+		haveLast bool
+	)
+	for cur.Next(ctx) {
+		var rec aggXIDDoc
+		if err := cur.Decode(&rec); err != nil {
+			return nil, "", err
+		}
+		out = append(out, &rec.XID)
+		lastID = rec.ID
+		haveLast = true
+	}
+	if err := cur.Err(); err != nil {
+		return nil, "", err
+	}
+
+	next := ""
+	if len(out) == pageSize && haveLast {
+		next = lastID.Hex()
+	}
+	return out, next, nil
 }
 
 func (c *Client) Count(ctx context.Context, q Query) (int64, error) {
-	return 0, ErrNotImplemented
+	ctx, cancel := c.withTimeout(ctx)
+	defer cancel()
+
+	mr, ok := c.repo.(*mongoXIDRepo)
+	if !ok {
+		return 0, ErrNotImplemented
+	}
+
+	match := bson.M{"deletedAt": bson.M{"$exists": false}}
+	if q.Path != "" {
+		match["metadata.path"] = q.Path
+	}
+	if q.NameEquals != nil {
+		match["name"] = *q.NameEquals
+	}
+	if q.NamePrefix != nil {
+		prefix := "^" + regexp.QuoteMeta(*q.NamePrefix)
+		match["name"] = bson.M{"$regex": prefix}
+	}
+	if len(q.TagsAll) > 0 {
+		match["info.tags"] = bson.M{"$all": q.TagsAll}
+	}
+	if q.CreatedAtGTE != nil || q.CreatedAtLT != nil {
+		rangeCond := bson.M{}
+		if q.CreatedAtGTE != nil {
+			rangeCond["$gte"] = q.CreatedAtGTE.UnixMilli()
+		}
+		if q.CreatedAtLT != nil {
+			rangeCond["$lt"] = q.CreatedAtLT.UnixMilli()
+		}
+		match["metadata.createdAt"] = rangeCond
+	}
+	if len(q.AttributesEq) > 0 {
+		for k, v := range q.AttributesEq {
+			match["metadata.extra."+k] = v
+		}
+	}
+
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: match}},
+		bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$xid"}}}},
+		bson.D{{Key: "$count", Value: "total"}},
+	}
+
+	cur, err := mr.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return 0, err
+	}
+	defer cur.Close(ctx)
+
+	var total int64
+	if cur.Next(ctx) {
+		var row struct {
+			Total int64 `bson:"total"`
+		}
+		if err := cur.Decode(&row); err != nil {
+			return 0, err
+		}
+		total = row.Total
+	}
+	if err := cur.Err(); err != nil {
+		return 0, err
+	}
+	return total, nil
 }
+
+// ListLatest returns the latest document per xid with pagination, using the same
+// semantics as List. It is an alias for clarity of intent.
+// func (c *Client) ListLatest(ctx context.Context, q Query) ([]*protocols.XID, string, error) {
+// 	return c.List(ctx, q)
+// }

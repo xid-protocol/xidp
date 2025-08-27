@@ -18,16 +18,20 @@ func NewMongoXIDRepo(c *mongo.Collection) XIDRepo {
 	return &mongoXIDRepo{collection: c}
 }
 
-// EnsureXIDIndexes creates recommended indexes on the collection.
-func EnsureXIDIndexes(ctx context.Context, c *mongo.Collection) error {
-	models := []mongo.IndexModel{
-		{Keys: bson.D{{Key: "xid", Value: 1}, {Key: "metadata.path", Value: 1}}, Options: options.Index().SetUnique(true)},
-		{Keys: bson.D{{Key: "idempotencyKey", Value: 1}, {Key: "metadata.path", Value: 1}}, Options: options.Index().SetUnique(true)},
-		{Keys: bson.D{{Key: "metadata.createdAt", Value: 1}, {Key: "metadata.path", Value: 1}}},
-	}
-	_, err := c.Indexes().CreateMany(ctx, models)
-	return err
+func (r *mongoXIDRepo) List(ctx context.Context, q Query) ([]*protocols.XID, string, error) {
+	return nil, "", nil
 }
+
+// EnsureXIDIndexes creates recommended indexes on the collection.
+// func EnsureXIDIndexes(ctx context.Context, c *mongo.Collection) error {
+// 	models := []mongo.IndexModel{
+// 		{Keys: bson.D{{Key: "xid", Value: 1}, {Key: "metadata.path", Value: 1}}, Options: options.Index().SetUnique(true)},
+// 		{Keys: bson.D{{Key: "idempotencyKey", Value: 1}, {Key: "metadata.path", Value: 1}}, Options: options.Index().SetUnique(true)},
+// 		{Keys: bson.D{{Key: "metadata.createdAt", Value: 1}, {Key: "metadata.path", Value: 1}}},
+// 	}
+// 	_, err := c.Indexes().CreateMany(ctx, models)
+// 	return err
+// }
 
 func (r *mongoXIDRepo) Exists(ctx context.Context, xid, path string) (bool, error) {
 	filter := bson.M{"xid": xid, "metadata.path": path, "deletedAt": bson.M{"$exists": false}}

@@ -10,8 +10,7 @@ import (
 type XIDRepo interface {
 	Exists(ctx context.Context, xid, path string) (bool, error)
 	Insert(ctx context.Context, doc *protocols.XID) error
-	// InsertIdempotent inserts with `(metadata.path, _idk)` uniqueness; if already exists, it should not create a duplicate
-	// and return nil.
+	List(ctx context.Context, q Query) ([]*protocols.XID, string, error)
 	InsertIdempotent(ctx context.Context, doc *protocols.XID, idempotencyKey string) error
 	Upsert(ctx context.Context, doc *protocols.XID) error
 	Replace(ctx context.Context, xid, path string, doc *protocols.XID) error
