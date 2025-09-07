@@ -9,6 +9,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var (
+	ErrAgentAlreadyExists = errors.New("agent already exists")
+)
+
 // Input unique Agent name
 func InitWithMongo(collection *mongo.Collection, AgentName string) (*protocols.XID[Config], error) {
 	//check AgentName is valid
@@ -17,7 +21,7 @@ func InitWithMongo(collection *mongo.Collection, AgentName string) (*protocols.X
 	exist := common.CheckXidExistsWithMongo(collection, xid, "/protocols/aiagent")
 	if exist {
 		logx.Errorf("Agent already exists, %s", AgentName)
-		return nil, errors.New("agent already exists")
+		return nil, ErrAgentAlreadyExists
 	}
 	config := Config{
 		tools: nil,
