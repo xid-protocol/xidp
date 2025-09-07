@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	XIDVersion = "0.2.0"
+	XIDVersion = "0.2.1"
 )
 
 type OperationType string
