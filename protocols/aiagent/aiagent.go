@@ -14,13 +14,13 @@ func NewInfo(AgentName string, desc string) protocols.Info {
 	}
 }
 
-func NewMetadata(operation protocols.OperationType, contentType string) protocols.Metadata {
+func NewMetadata(operation protocols.OperationType) protocols.Metadata {
 	return protocols.Metadata{
 		CreatedAt:   common.GetTimestamp(),
 		CardId:      common.GenerateID(),
 		Operation:   operation,
 		Path:        "/protocols/aiagent",
-		ContentType: contentType,
+		ContentType: "application/json",
 	}
 }
 
