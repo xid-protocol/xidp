@@ -5,12 +5,16 @@ import (
 	"github.com/xid-protocol/xidp/protocols"
 )
 
-func NewInfo(AgentName string, desc string) protocols.Info {
+type Config struct {
+	tools any
+}
+
+func NewInfo(AgentName string, systemPrompt string) protocols.Info {
 	return protocols.Info{
 		ID:   AgentName,
-		Type: "ai-agent",
-		Desc: desc,
-		Tags: append([]string{}, "ai-agent"),
+		Type: "AI_Agent_Name",
+		Desc: systemPrompt,
+		Tags: append([]string{}, "AI Agent"),
 	}
 }
 
